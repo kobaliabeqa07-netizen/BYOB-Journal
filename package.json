@@ -1,0 +1,67 @@
+{
+  "name": "byob-journal",
+  "version": "1.2.0",
+  "description": "BYOB Journal — Be Your Own Boss. A premium ICT trading journal desktop application.",
+  "author": "BYOB Journal",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --publish never",
+    "build:dir": "electron-builder --win --dir",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.byob.journal",
+    "productName": "BYOB Journal",
+    "directories": {
+      "output": "dist"
+    },
+    "icon": "icon.ico",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "BYOB Journal",
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "artifactName": "BYOB-Journal-Setup-${version}.${ext}"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "icon.ico",
+      "logo.png",
+      "updater.js",
+      "update-ui.js"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "GITHUB_USERNAME",
+        "repo": "byob-journal"
+      }
+    ]
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.11"
+  }
+}
