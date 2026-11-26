@@ -1147,6 +1147,142 @@
             color: rgb(var(--down));
             background: rgb(var(--down) / 0.1);
         }
+
+        /* ═══════════════════════════════════════════════════════ */
+        /* NEW TRADE BUTTON + LOG EXECUTION DRAWER                */
+        /* ═══════════════════════════════════════════════════════ */
+        .new-trade-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.6rem 1.25rem; border: 0; border-radius: 0.6rem; cursor: pointer;
+            background: rgb(var(--accent)); color: rgb(var(--on-accent));
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em;
+            box-shadow: 0 6px 18px rgb(var(--accent) / 0.22);
+            transition: background-color .2s ease, box-shadow .2s ease, transform .1s ease;
+        }
+        .new-trade-btn:hover { background: rgb(var(--accent-hover)); box-shadow: 0 8px 22px rgb(var(--accent) / 0.35); }
+        .new-trade-btn:active { background: rgb(var(--accent-active)); transform: translateY(1px); }
+        .new-trade-plus { font-size: 1rem; line-height: 1; font-weight: 600; }
+
+        .drawer-overlay {
+            position: fixed; top: 38px; left: 0; right: 0; bottom: 0; z-index: 60;
+            background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(2px);
+            opacity: 0; visibility: hidden;
+            transition: opacity .25s ease, visibility 0s linear .25s;
+        }
+        .drawer-overlay.open { opacity: 1; visibility: visible; transition-delay: 0s; }
+        :root[data-theme="light"] .drawer-overlay { background: rgba(15, 23, 42, 0.35); }
+
+        .trade-drawer {
+            position: fixed; top: 38px; right: 0; bottom: 0; z-index: 70;
+            width: min(520px, 100vw);
+            display: flex; flex-direction: column;
+            background: rgb(var(--card));
+            border-left: 1px solid rgb(var(--line) / 0.4);
+            box-shadow: -24px 0 60px rgba(0, 0, 0, 0.35);
+            transform: translateX(100%); visibility: hidden;
+            transition: transform .28s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .28s;
+        }
+        .trade-drawer.open { transform: translateX(0); visibility: visible; transition-delay: 0s; }
+        .trade-drawer-head {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.9rem 1.25rem; flex: none;
+            border-bottom: 1px solid rgb(var(--line) / 0.3);
+        }
+        .trade-drawer-close {
+            width: 1.75rem; height: 1.75rem; border-radius: 0.5rem; border: 0; cursor: pointer;
+            background: transparent; color: rgb(var(--s400)); font-size: 0.8rem;
+            transition: background-color .15s ease, color .15s ease;
+        }
+        .trade-drawer-close:hover { background: rgb(var(--accent) / 0.12); color: rgb(var(--accent)); }
+        .trade-drawer-body { flex: 1; overflow-y: auto; }
+
+        /* ═══════════════════════════════════════════════════════ */
+        /* DATE & TIME PICKER (Log Execution)                     */
+        /* ═══════════════════════════════════════════════════════ */
+        .dtp { position: relative; }
+        .dtp-display {
+            width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+            padding: 0.5rem 0.75rem; border-radius: 0.5rem; cursor: pointer; text-align: left;
+            background: rgb(var(--f900)); color: rgb(var(--s200));
+            border: 1px solid rgb(var(--s700) / 0.5);
+            font-size: 0.75rem; font-family: inherit;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+        .dtp-display:hover { border-color: rgb(var(--accent) / 0.4); }
+        .dtp-display:focus-visible, .dtp.open .dtp-display, .dtp.invalid .dtp-display {
+            outline: none; border-color: rgb(var(--accent) / 0.55); box-shadow: 0 0 0 1px rgb(var(--accent) / 0.2);
+        }
+        .dtp.invalid .dtp-display { border-color: rgb(var(--down) / 0.8); box-shadow: 0 0 0 1px rgb(var(--down) / 0.25); }
+        .dtp-text.is-empty { color: rgb(var(--s600)); }
+        .dtp-icon { flex: none; color: rgb(var(--accent)); }
+        .dtp-native {
+            position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 1px;
+            opacity: 0; pointer-events: none; border: 0; padding: 0;
+        }
+        .dtp-pop {
+            position: absolute; top: calc(100% + 6px); left: 0; z-index: 40; width: 292px;
+            padding: 0.75rem; border-radius: 0.75rem;
+            background: rgb(var(--menu)); color: rgb(var(--s200));
+            border: 1px solid rgb(var(--line) / 0.45);
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.38);
+            opacity: 0; visibility: hidden; transform: translateY(-4px);
+            transition: opacity .15s ease, transform .15s ease, visibility 0s linear .15s;
+        }
+        :root[data-theme="light"] .dtp-pop { box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18); }
+        .dtp.open .dtp-pop { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+        .dtp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+        .dtp-month { font-size: 0.8rem; font-weight: 700; color: rgb(var(--white)); letter-spacing: 0.02em; }
+        .dtp-nav, .dtp-step {
+            width: 1.75rem; height: 1.75rem; border: 0; border-radius: 0.5rem; cursor: pointer;
+            background: transparent; color: rgb(var(--s400)); font-size: 1.05rem; line-height: 1;
+            transition: background-color .15s ease, color .15s ease;
+        }
+        .dtp-nav:hover, .dtp-step:hover { background: rgb(var(--accent) / 0.12); color: rgb(var(--accent)); }
+        .dtp-week, .dtp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+        .dtp-week span {
+            text-align: center; padding: 0.25rem 0; font-size: 0.6rem; font-weight: 700;
+            letter-spacing: 0.08em; text-transform: uppercase; color: rgb(var(--s600));
+        }
+        .dtp-day {
+            height: 2rem; border: 1px solid transparent; border-radius: 0.5rem; cursor: pointer;
+            background: transparent; color: rgb(var(--s200)); font-size: 0.75rem; font-family: inherit;
+            transition: background-color .12s ease, color .12s ease, border-color .12s ease;
+        }
+        .dtp-day:hover { background: rgb(var(--accent) / 0.12); color: rgb(var(--accent)); }
+        .dtp-day.other { color: rgb(var(--s700)); }
+        .dtp-day.today { border-color: rgb(var(--accent) / 0.6); color: rgb(var(--accent)); font-weight: 700; }
+        .dtp-day.selected, .dtp-day.selected:hover {
+            background: rgb(var(--accent)); border-color: rgb(var(--accent));
+            color: rgb(var(--on-accent)); font-weight: 700;
+        }
+        .dtp-time {
+            display: flex; align-items: center; justify-content: space-between; gap: 0.35rem;
+            margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px solid rgb(var(--line) / 0.3);
+        }
+        .dtp-time-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgb(var(--s500)); }
+        .dtp-stepper { display: flex; align-items: center; gap: 2px; }
+        .dtp-colon { color: rgb(var(--s500)); font-weight: 700; }
+        .dtp-num {
+            width: 2.1rem; padding: 0.3rem 0; text-align: center; border-radius: 0.4rem;
+            background: rgb(var(--f900)); color: rgb(var(--white));
+            border: 1px solid rgb(var(--s700) / 0.5);
+            font-size: 0.8rem; font-weight: 600; font-family: 'JetBrains Mono', monospace;
+        }
+        .dtp-num:focus { outline: none; border-color: rgb(var(--accent) / 0.55); box-shadow: 0 0 0 1px rgb(var(--accent) / 0.2); }
+        .dtp-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 0.6rem; }
+        .dtp-link {
+            border: 0; background: transparent; cursor: pointer; padding: 0.35rem 0.5rem; border-radius: 0.4rem;
+            color: rgb(var(--accent)); font-size: 0.7rem; font-weight: 700; font-family: inherit;
+        }
+        .dtp-link:hover { background: rgb(var(--accent) / 0.12); }
+        .dtp-done {
+            border: 0; cursor: pointer; padding: 0.4rem 1rem; border-radius: 0.5rem;
+            background: rgb(var(--accent)); color: rgb(var(--on-accent));
+            font-size: 0.7rem; font-weight: 700; font-family: inherit;
+            transition: background-color .15s ease;
+        }
+        .dtp-done:hover { background: rgb(var(--accent-hover)); }
+        .dtp-done:active { background: rgb(var(--accent-active)); }
     </style>
 </head>
 <body>
@@ -1285,155 +1421,19 @@
                 </div>
             </section>
 
-            <!-- Log Execution + Timeline + Calendar -->
+            <!-- New trade button (opens the Log Execution drawer) -->
+            <div class="flex justify-end mb-4 fade-up">
+                <button type="button" id="new-trade-btn" class="new-trade-btn no-drag">
+                    <span class="new-trade-plus">+</span> New trade
+                </button>
+            </div>
+
+            <!-- Timeline + Calendar -->
             <section class="fade-up">
                 <div class="grid grid-cols-1 xl:grid-cols-[480px_minmax(0,1fr)] gap-6 items-start">
 
                     <!-- LEFT COLUMN -->
                     <div class="space-y-4">
-
-                        <!-- Log Execution (collapsible) -->
-                        <details class="card rounded-xl overflow-hidden" open>
-                            <summary class="flex items-center gap-2.5 px-5 py-3.5 hover:bg-white/[0.015] transition-colors cursor-pointer list-none">
-                                <span class="chevron text-slate-500 text-[0.65rem]">▶</span>
-                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-                                <h2 class="text-xs font-extrabold text-white tracking-[0.12em] uppercase">Log Execution</h2>
-                            </summary>
-                            <div class="p-5">
-                                <form id="trade-form" autocomplete="off">
-                                    <div class="grid grid-cols-2 gap-x-3 gap-y-3 mb-4">
-                                        <div>
-                                            <label for="f-datetime" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Date &amp; Time</label>
-                                            <input type="datetime-local" id="f-datetime" required
-                                                class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20">
-                                        </div>
-                                        <div>
-                                            <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Time Session</label>
-                                            <div id="session-multiselect" class="multi-select-wrapper">
-                                                <div id="session-pills" class="flex flex-wrap gap-1"></div>
-                                                <input type="text" id="session-search" class="multi-select-input" placeholder="Type or select session...">
-                                            </div>
-                                            <div id="session-dropdown" class="multi-select-dropdown"></div>
-                                        </div>
-                                        <div>
-                                            <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Asset / Pair</label>
-                                            <div id="asset-multiselect" class="multi-select-wrapper">
-                                                <div id="asset-pills" class="flex flex-wrap gap-1"></div>
-                                                <input type="text" id="asset-search" class="multi-select-input" placeholder="Type or select asset...">
-                                            </div>
-                                            <div id="asset-dropdown" class="multi-select-dropdown"></div>
-                                        </div>
-                                        <div>
-                                            <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Account Type <span class="text-slate-600 normal-case tracking-normal font-medium">(optional)</span></label>
-                                            <div id="account-multiselect" class="multi-select-wrapper">
-                                                <div id="account-pills" class="flex flex-wrap gap-1"></div>
-                                                <input type="text" id="account-search" class="multi-select-input" placeholder="Type or select account...">
-                                            </div>
-                                            <div id="account-dropdown" class="multi-select-dropdown"></div>
-                                        </div>
-                                        <div>
-                                            <label for="f-direction" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Direction</label>
-                                            <select id="f-direction" required
-                                                class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 cursor-pointer">
-                                                <option value="">Select direction…</option>
-                                                <option value="LONG">LONG</option>
-                                                <option value="SHORT">SHORT</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label for="f-outcome" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Trade Outcome</label>
-                                            <select id="f-outcome" required
-                                                class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 cursor-pointer">
-                                                <option value="">Select outcome…</option>
-                                                <option value="WIN">🟢 WIN</option>
-                                                <option value="LOSS">🔴 LOSS</option>
-                                                <option value="BE">⚖️ BE</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="space-y-3 mb-4">
-                                        <div>
-                                            <label for="f-pnl" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Net PnL ($)</label>
-                                            <input type="number" id="f-pnl" required step="0.01" min="0" placeholder="e.g. 100, 250, 50"
-                                                class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20">
-                                        </div>
-
-                                        <div>
-                                            <label for="f-risk" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Risk ($) <span class="text-slate-600 normal-case tracking-normal font-medium">(optional)</span></label>
-                                            <div class="flex items-center gap-2">
-                                                <input type="number" id="f-risk" step="0.01" min="0" placeholder="e.g. 100"
-                                                    class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20">
-                                                <div class="shrink-0 text-xs font-mono font-bold bg-surface-900 border border-slate-700/50 rounded-lg px-3 py-2 min-w-[96px] text-center">
-                                                    <span class="text-slate-500 font-semibold">RR </span><span id="rr-preview" class="text-slate-300">—</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Psychological State <span class="text-slate-600 normal-case tracking-normal font-medium">(optional)</span></label>
-                                            <div id="psych-multiselect" class="multi-select-wrapper">
-                                                <div id="psych-pills" class="flex flex-wrap gap-1"></div>
-                                                <input type="text" id="psych-search" class="multi-select-input" placeholder="Type or select state...">
-                                            </div>
-                                            <div id="psych-dropdown" class="multi-select-dropdown"></div>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Confluence Setups <span class="text-slate-600 normal-case tracking-normal font-medium">(optional)</span></label>
-                                            <div id="confluence-multiselect" class="multi-select-wrapper">
-                                                <div id="confluence-pills" class="flex flex-wrap gap-1"></div>
-                                                <input type="text" id="confluence-search" class="multi-select-input" placeholder="Type or select confluence...">
-                                            </div>
-                                            <div id="confluence-dropdown" class="multi-select-dropdown"></div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Trade Comment -->
-                                    <div class="mb-2">
-                                        <label for="f-comment" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Trade Comment</label>
-                                        <textarea id="f-comment" rows="2" placeholder="Add your trade notes here..." class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20"></textarea>
-                                    </div>
-
-                                    <!-- Attachment -->
-                                    <div class="mb-4">
-                                        <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Trade Screenshot / Photo</label>
-                                        <div id="attachment-drop-area" class="border-2 border-dashed border-slate-700/50 rounded-lg p-4 text-center transition-all duration-200 hover:border-indigo-500/50 hover:bg-surface-900/50 cursor-pointer">
-                                            <div id="attachment-placeholder" class="space-y-2">
-                                                <div class="text-slate-400 text-2xl">📷</div>
-                                                <p class="text-xs text-slate-500">Drag & drop screenshot here<br>or <span class="text-indigo-400 font-semibold">click to browse</span></p>
-                                                <p class="text-[0.6rem] text-slate-600 mt-1">PNG, JPG, WebP, GIF, BMP up to 5MB</p>
-                                            </div>
-                                            <div id="attachment-preview" class="hidden space-y-2">
-                                                <div class="flex items-center justify-between bg-surface-900/50 rounded-lg p-3">
-                                                    <div class="flex items-center gap-3">
-                                                        <div class="text-slate-300 text-lg">🖼️</div>
-                                                        <div>
-                                                            <p id="attachment-name" class="text-xs font-semibold text-slate-200 truncate max-w-[180px]"></p>
-                                                            <p id="attachment-size" class="text-[0.6rem] text-slate-500"></p>
-                                                        </div>
-                                                    </div>
-                                                    <button type="button" id="attachment-remove" class="text-slate-500 hover:text-red-400 text-xs font-bold px-3 py-1 rounded transition-colors">
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                                <div id="attachment-image-preview" class="hidden mt-2">
-                                                    <img id="attachment-preview-img" class="max-h-32 rounded-lg mx-auto border border-slate-800" alt="Preview">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <input type="file" id="attachment-input" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp" class="hidden">
-                                    </div>
-
-                                    <div class="flex justify-center w-full">
-                                        <button type="submit" id="btn-submit"
-                                            class="btn-commit w-full sm:w-auto bg-[rgb(var(--accent))] hover:bg-[rgb(var(--accent-hover))] active:bg-[rgb(var(--accent-active))] text-[rgb(var(--on-accent))] text-xs font-bold py-2.5 px-10 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-[color:rgb(var(--accent)/0.2)] hover:shadow-[color:rgb(var(--accent)/0.4)] tracking-wide uppercase">
-                                            <span>⚡</span> Commit Execution
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </details>
 
                         <!-- Your Edge Breakdown (collapsible) -->
                         <details id="edge-section" class="card rounded-xl overflow-hidden" open>
@@ -1645,6 +1645,186 @@
     </div><!-- /.app-layout -->
 
     <!-- ═══ DELETE CONFIRMATION MODAL ═══ -->
+    <!-- ─── LOG EXECUTION DRAWER (slides in from the right) ─── -->
+    <div id="trade-drawer-overlay" class="drawer-overlay"></div>
+    <aside id="trade-drawer" class="trade-drawer" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Log Execution">
+        <div class="trade-drawer-head">
+            <div class="flex items-center gap-2.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                <h2 class="text-xs font-extrabold text-white tracking-[0.12em] uppercase">Log Execution</h2>
+            </div>
+            <button type="button" id="trade-drawer-close" class="trade-drawer-close" title="Close (Esc)" aria-label="Close">✕</button>
+        </div>
+        <div class="trade-drawer-body">
+            <div class="p-5">
+                                <form id="trade-form" autocomplete="off">
+                                    <div class="grid grid-cols-2 gap-x-3 gap-y-3 mb-4">
+                                        <div>
+                                            <label for="dtp-display" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Date &amp; Time</label>
+                                            <div class="dtp" id="dtp">
+                                                <button type="button" id="dtp-display" class="dtp-display" aria-haspopup="dialog" aria-expanded="false">
+                                                    <span id="dtp-text" class="dtp-text is-empty">Select date &amp; time</span>
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="dtp-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                                </button>
+                                                <input type="datetime-local" id="f-datetime" class="dtp-native" required tabindex="-1" aria-hidden="true">
+                                                <div id="dtp-pop" class="dtp-pop" role="dialog" aria-label="Choose date and time">
+                                                    <div class="dtp-head">
+                                                        <button type="button" class="dtp-nav" id="dtp-prev" aria-label="Previous month">‹</button>
+                                                        <span id="dtp-month" class="dtp-month"></span>
+                                                        <button type="button" class="dtp-nav" id="dtp-next" aria-label="Next month">›</button>
+                                                    </div>
+                                                    <div class="dtp-week"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+                                                    <div id="dtp-grid" class="dtp-grid"></div>
+                                                    <div class="dtp-time">
+                                                        <span class="dtp-time-label">Time</span>
+                                                        <div class="dtp-stepper">
+                                                            <button type="button" class="dtp-step" id="dtp-h-dn" aria-label="Hour down">−</button>
+                                                            <input type="text" id="dtp-h" class="dtp-num" inputmode="numeric" maxlength="2" aria-label="Hour">
+                                                            <button type="button" class="dtp-step" id="dtp-h-up" aria-label="Hour up">+</button>
+                                                        </div>
+                                                        <span class="dtp-colon">:</span>
+                                                        <div class="dtp-stepper">
+                                                            <button type="button" class="dtp-step" id="dtp-m-dn" aria-label="Minutes down">−</button>
+                                                            <input type="text" id="dtp-m" class="dtp-num" inputmode="numeric" maxlength="2" aria-label="Minutes">
+                                                            <button type="button" class="dtp-step" id="dtp-m-up" aria-label="Minutes up">+</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="dtp-foot">
+                                                        <button type="button" class="dtp-link" id="dtp-today">Today</button>
+                                                        <button type="button" class="dtp-done" id="dtp-done">Done</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Time Session</label>
+                                            <div id="session-multiselect" class="multi-select-wrapper">
+                                                <div id="session-pills" class="flex flex-wrap gap-1"></div>
+                                                <input type="text" id="session-search" class="multi-select-input" placeholder="Type or select session...">
+                                            </div>
+                                            <div id="session-dropdown" class="multi-select-dropdown"></div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Asset / Pair</label>
+                                            <div id="asset-multiselect" class="multi-select-wrapper">
+                                                <div id="asset-pills" class="flex flex-wrap gap-1"></div>
+                                                <input type="text" id="asset-search" class="multi-select-input" placeholder="Type or select asset...">
+                                            </div>
+                                            <div id="asset-dropdown" class="multi-select-dropdown"></div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Account Type <span class="text-slate-600 normal-case tracking-normal font-medium">(optional)</span></label>
+                                            <div id="account-multiselect" class="multi-select-wrapper">
+                                                <div id="account-pills" class="flex flex-wrap gap-1"></div>
+                                                <input type="text" id="account-search" class="multi-select-input" placeholder="Type or select account...">
+                                            </div>
+                                            <div id="account-dropdown" class="multi-select-dropdown"></div>
+                                        </div>
+                                        <div>
+                                            <label for="f-direction" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Direction</label>
+                                            <select id="f-direction" required
+                                                class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 cursor-pointer">
+                                                <option value="">Select direction…</option>
+                                                <option value="LONG">LONG</option>
+                                                <option value="SHORT">SHORT</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="f-outcome" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Trade Outcome</label>
+                                            <select id="f-outcome" required
+                                                class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 cursor-pointer">
+                                                <option value="">Select outcome…</option>
+                                                <option value="WIN">🟢 WIN</option>
+                                                <option value="LOSS">🔴 LOSS</option>
+                                                <option value="BE">⚖️ BE</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-3 mb-4">
+                                        <div>
+                                            <label for="f-pnl" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Net PnL ($)</label>
+                                            <input type="number" id="f-pnl" required step="0.01" min="0" placeholder="e.g. 100, 250, 50"
+                                                class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20">
+                                        </div>
+
+                                        <div>
+                                            <label for="f-risk" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Risk ($) <span class="text-slate-600 normal-case tracking-normal font-medium">(optional)</span></label>
+                                            <div class="flex items-center gap-2">
+                                                <input type="number" id="f-risk" step="0.01" min="0" placeholder="e.g. 100"
+                                                    class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20">
+                                                <div class="shrink-0 text-xs font-mono font-bold bg-surface-900 border border-slate-700/50 rounded-lg px-3 py-2 min-w-[96px] text-center">
+                                                    <span class="text-slate-500 font-semibold">RR </span><span id="rr-preview" class="text-slate-300">—</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Psychological State <span class="text-slate-600 normal-case tracking-normal font-medium">(optional)</span></label>
+                                            <div id="psych-multiselect" class="multi-select-wrapper">
+                                                <div id="psych-pills" class="flex flex-wrap gap-1"></div>
+                                                <input type="text" id="psych-search" class="multi-select-input" placeholder="Type or select state...">
+                                            </div>
+                                            <div id="psych-dropdown" class="multi-select-dropdown"></div>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Confluence Setups <span class="text-slate-600 normal-case tracking-normal font-medium">(optional)</span></label>
+                                            <div id="confluence-multiselect" class="multi-select-wrapper">
+                                                <div id="confluence-pills" class="flex flex-wrap gap-1"></div>
+                                                <input type="text" id="confluence-search" class="multi-select-input" placeholder="Type or select confluence...">
+                                            </div>
+                                            <div id="confluence-dropdown" class="multi-select-dropdown"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Trade Comment -->
+                                    <div class="mb-2">
+                                        <label for="f-comment" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Trade Comment</label>
+                                        <textarea id="f-comment" rows="2" placeholder="Add your trade notes here..." class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20"></textarea>
+                                    </div>
+
+                                    <!-- Attachment -->
+                                    <div class="mb-4">
+                                        <label class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Trade Screenshot / Photo</label>
+                                        <div id="attachment-drop-area" class="border-2 border-dashed border-slate-700/50 rounded-lg p-4 text-center transition-all duration-200 hover:border-indigo-500/50 hover:bg-surface-900/50 cursor-pointer">
+                                            <div id="attachment-placeholder" class="space-y-2">
+                                                <div class="text-slate-400 text-2xl">📷</div>
+                                                <p class="text-xs text-slate-500">Drag & drop screenshot here<br>or <span class="text-indigo-400 font-semibold">click to browse</span></p>
+                                                <p class="text-[0.6rem] text-slate-600 mt-1">PNG, JPG, WebP, GIF, BMP up to 5MB</p>
+                                            </div>
+                                            <div id="attachment-preview" class="hidden space-y-2">
+                                                <div class="flex items-center justify-between bg-surface-900/50 rounded-lg p-3">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="text-slate-300 text-lg">🖼️</div>
+                                                        <div>
+                                                            <p id="attachment-name" class="text-xs font-semibold text-slate-200 truncate max-w-[180px]"></p>
+                                                            <p id="attachment-size" class="text-[0.6rem] text-slate-500"></p>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" id="attachment-remove" class="text-slate-500 hover:text-red-400 text-xs font-bold px-3 py-1 rounded transition-colors">
+                                                        Remove
+                                                    </button>
+                                                </div>
+                                                <div id="attachment-image-preview" class="hidden mt-2">
+                                                    <img id="attachment-preview-img" class="max-h-32 rounded-lg mx-auto border border-slate-800" alt="Preview">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="file" id="attachment-input" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp" class="hidden">
+                                    </div>
+
+                                    <div class="flex justify-center w-full">
+                                        <button type="submit" id="btn-submit"
+                                            class="btn-commit w-full sm:w-auto bg-[rgb(var(--accent))] hover:bg-[rgb(var(--accent-hover))] active:bg-[rgb(var(--accent-active))] text-[rgb(var(--on-accent))] text-xs font-bold py-2.5 px-10 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-[color:rgb(var(--accent)/0.2)] hover:shadow-[color:rgb(var(--accent)/0.4)] tracking-wide uppercase">
+                                            <span>⚡</span> Commit Execution
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+        </div>
+    </aside>
+
     <div id="delete-modal" class="fixed inset-0 z-50 flex items-center justify-center" style="display:none; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);">
         <div class="bg-[rgb(var(--card))] border border-slate-700/50 rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl">
             <div class="flex items-center gap-3 mb-4">
@@ -3214,6 +3394,7 @@
                     trades[index] = tradeData;
                     save();
                     cancelEdit();
+                    closeTradeDrawer();
                     updateUI();
                     return;
                 }
@@ -3258,6 +3439,7 @@
             clearAttachment();
             document.getElementById('trade-form').reset();
             cancelEdit();
+            closeTradeDrawer();
             updateUI();
         }
 
@@ -4059,6 +4241,7 @@
             editingTradeId = id;
 
             document.getElementById('f-datetime').value = trade.datetime;
+            if (window._dtpRefresh) window._dtpRefresh();
             
             selectedSessions = Array.isArray(trade.sessions) ? [...trade.sessions] : (trade.session ? [trade.session] : []);
             renderSessionPills();
@@ -4096,7 +4279,7 @@
             }
             cancelBtn.style.display = 'inline-block';
 
-            document.querySelector('.xl\\:sticky')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            openTradeDrawer();
         }
         window._edit = editTrade;
 
@@ -4138,6 +4321,187 @@
         document.addEventListener('click', function(e) {
             if (e.target.id === 'edit-cancel') {
                 cancelEdit();
+            }
+        });
+
+        // ── DATE & TIME PICKER ───────────────────────────────
+        (function () {
+            var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            var MON_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            var root = document.getElementById('dtp');
+            var input = document.getElementById('f-datetime');
+            var display = document.getElementById('dtp-display');
+            var textEl = document.getElementById('dtp-text');
+            var grid = document.getElementById('dtp-grid');
+            var monthEl = document.getElementById('dtp-month');
+            var hEl = document.getElementById('dtp-h');
+            var mEl = document.getElementById('dtp-m');
+            var viewY, viewM;
+
+            function pad(n) { return (n < 10 ? '0' : '') + n; }
+            function isOpen() { return root.classList.contains('open'); }
+
+            function parse() {
+                var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(input.value || '');
+                return m ? { y: +m[1], mo: +m[2] - 1, d: +m[3], h: +m[4], mi: +m[5] } : null;
+            }
+
+            function currentParts() {
+                var v = parse();
+                if (v) return v;
+                var n = new Date();
+                return { y: n.getFullYear(), mo: n.getMonth(), d: n.getDate(), h: n.getHours(), mi: n.getMinutes(), fresh: true };
+            }
+
+            function commit(p) {
+                input.value = p.y + '-' + pad(p.mo + 1) + '-' + pad(p.d) + 'T' + pad(p.h) + ':' + pad(p.mi);
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                root.classList.remove('invalid');
+                refresh();
+            }
+
+            function refresh() {
+                var v = parse();
+                if (v) {
+                    textEl.textContent = MON_SHORT[v.mo] + ' ' + v.d + ', ' + v.y + '  ·  ' + pad(v.h) + ':' + pad(v.mi);
+                    textEl.classList.remove('is-empty');
+                } else {
+                    textEl.textContent = 'Select date & time';
+                    textEl.classList.add('is-empty');
+                }
+                if (isOpen()) render();
+            }
+
+            function render() {
+                var v = parse();
+                var now = new Date();
+                monthEl.textContent = MONTHS[viewM] + ' ' + viewY;
+                grid.innerHTML = '';
+                var first = new Date(viewY, viewM, 1).getDay();
+                for (var i = 0; i < 42; i++) {
+                    var dt = new Date(viewY, viewM, 1 - first + i);
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'dtp-day';
+                    b.textContent = dt.getDate();
+                    if (dt.getMonth() !== viewM) b.classList.add('other');
+                    if (dt.getFullYear() === now.getFullYear() && dt.getMonth() === now.getMonth() && dt.getDate() === now.getDate()) b.classList.add('today');
+                    if (v && dt.getFullYear() === v.y && dt.getMonth() === v.mo && dt.getDate() === v.d) b.classList.add('selected');
+                    (function (d) {
+                        b.addEventListener('click', function () {
+                            var c = currentParts();
+                            commit({ y: d.getFullYear(), mo: d.getMonth(), d: d.getDate(), h: c.h, mi: c.mi });
+                            viewY = d.getFullYear(); viewM = d.getMonth();
+                            render();
+                        });
+                    })(dt);
+                    grid.appendChild(b);
+                }
+                var c = currentParts();
+                hEl.value = pad(c.h);
+                mEl.value = pad(c.mi);
+            }
+
+            function open() {
+                if (isOpen()) return;
+                var c = currentParts();
+                viewY = c.y; viewM = c.mo;
+                root.classList.add('open');
+                display.setAttribute('aria-expanded', 'true');
+                render();
+            }
+
+            function close() {
+                root.classList.remove('open');
+                display.setAttribute('aria-expanded', 'false');
+            }
+
+            function setTime(h, mi) {
+                var c = currentParts();
+                commit({ y: c.y, mo: c.mo, d: c.d, h: h, mi: mi });
+                viewY = c.y; viewM = c.mo;
+                render();
+            }
+
+            function step(kind, delta) {
+                var c = currentParts();
+                var h = c.h, mi = c.mi;
+                if (kind === 'h') h = (h + delta + 24) % 24;
+                else mi = (mi + delta + 60) % 60;
+                setTime(h, mi);
+            }
+
+            function typed(el, max, kind) {
+                var n = parseInt(el.value, 10);
+                if (isNaN(n)) { render(); return; }
+                n = Math.max(0, Math.min(max, n));
+                var c = currentParts();
+                setTime(kind === 'h' ? n : c.h, kind === 'm' ? n : c.mi);
+            }
+
+            display.addEventListener('click', function () { isOpen() ? close() : open(); });
+            // browser validation (empty required field) focuses the hidden native input -> show the picker
+            input.addEventListener('focus', function () { if (!input.value) root.classList.add('invalid'); open(); });
+            document.getElementById('dtp-prev').addEventListener('click', function () { viewM--; if (viewM < 0) { viewM = 11; viewY--; } render(); });
+            document.getElementById('dtp-next').addEventListener('click', function () { viewM++; if (viewM > 11) { viewM = 0; viewY++; } render(); });
+            document.getElementById('dtp-h-up').addEventListener('click', function () { step('h', 1); });
+            document.getElementById('dtp-h-dn').addEventListener('click', function () { step('h', -1); });
+            document.getElementById('dtp-m-up').addEventListener('click', function () { step('m', 5); });
+            document.getElementById('dtp-m-dn').addEventListener('click', function () { step('m', -5); });
+            hEl.addEventListener('change', function () { typed(hEl, 23, 'h'); });
+            mEl.addEventListener('change', function () { typed(mEl, 59, 'm'); });
+            hEl.addEventListener('focus', function () { hEl.select(); });
+            mEl.addEventListener('focus', function () { mEl.select(); });
+            document.getElementById('dtp-today').addEventListener('click', function () {
+                var n = new Date();
+                commit({ y: n.getFullYear(), mo: n.getMonth(), d: n.getDate(), h: n.getHours(), mi: n.getMinutes() });
+                viewY = n.getFullYear(); viewM = n.getMonth();
+                render();
+            });
+            document.getElementById('dtp-done').addEventListener('click', close);
+
+            document.addEventListener('mousedown', function (e) {
+                if (isOpen() && !root.contains(e.target)) close();
+            });
+            // Esc closes only the picker (capture phase, so the drawer stays open)
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && isOpen()) { e.stopPropagation(); close(); display.focus(); }
+            }, true);
+
+            document.getElementById('trade-form').addEventListener('reset', function () {
+                setTimeout(function () { root.classList.remove('invalid'); refresh(); }, 0);
+            });
+
+            window._dtpRefresh = refresh;
+            window._dtpClose = close;
+            refresh();
+        })();
+
+        // ── LOG EXECUTION DRAWER ─────────────────────────────
+        function openTradeDrawer() {
+            document.getElementById('trade-drawer').classList.add('open');
+            document.getElementById('trade-drawer').setAttribute('aria-hidden', 'false');
+            document.getElementById('trade-drawer-overlay').classList.add('open');
+        }
+
+        function closeTradeDrawer() {
+            // closing while editing cancels the edit, so the next "New trade" starts clean
+            if (editingTradeId) cancelEdit();
+            if (window._dtpClose) window._dtpClose();
+            document.getElementById('trade-drawer').classList.remove('open');
+            document.getElementById('trade-drawer').setAttribute('aria-hidden', 'true');
+            document.getElementById('trade-drawer-overlay').classList.remove('open');
+        }
+
+        document.getElementById('new-trade-btn').addEventListener('click', function () {
+            if (editingTradeId) cancelEdit();
+            openTradeDrawer();
+        });
+        document.getElementById('trade-drawer-close').addEventListener('click', closeTradeDrawer);
+        document.getElementById('trade-drawer-overlay').addEventListener('click', closeTradeDrawer);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && document.getElementById('trade-drawer').classList.contains('open')) {
+                closeTradeDrawer();
             }
         });
 
