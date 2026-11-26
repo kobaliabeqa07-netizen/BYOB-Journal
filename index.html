@@ -1112,6 +1112,23 @@
         /* ═══════════════════════════════════════════════════════ */
         /* NEW TRADE BUTTON + LOG EXECUTION DRAWER                */
         /* ═══════════════════════════════════════════════════════ */
+        .workspace-view-tabs { display: flex; align-items: center; gap: 0.5rem; }
+        .workspace-view-tab {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            padding: 0.6rem 1.25rem; border: 0; border-radius: 0.6rem; cursor: pointer;
+            background: rgb(var(--field)); color: rgb(var(--s400));
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em;
+            transition: background-color .2s ease, box-shadow .2s ease, transform .1s ease, color .2s ease;
+        }
+        .workspace-view-tab:hover { color: rgb(var(--s200)); }
+        .workspace-view-tab[aria-selected="true"] {
+            background: rgb(var(--accent)); color: rgb(var(--on-accent));
+            box-shadow: 0 6px 18px rgb(var(--accent) / 0.22);
+        }
+        .workspace-view-tab[aria-selected="true"]:hover { background: rgb(var(--accent-hover)); box-shadow: 0 8px 22px rgb(var(--accent) / 0.35); }
+        .workspace-view-tab[aria-selected="true"]:active { background: rgb(var(--accent-active)); transform: translateY(1px); }
+        .workspace-view-tab:focus-visible { outline: 2px solid rgb(var(--accent)); outline-offset: 2px; }
+        #workspace-overview-panel[hidden], #workspace-log-panel[hidden] { display: none !important; }
         .new-trade-btn {
             display: inline-flex; align-items: center; gap: 0.5rem;
             padding: 0.6rem 1.25rem; border: 0; border-radius: 0.6rem; cursor: pointer;
@@ -1253,7 +1270,8 @@
             min-height: 44px; padding: 8px 6px; border-radius: 12px;
             background: rgb(var(--field)); border: 1px solid rgb(var(--line));
             color: rgb(var(--s400)); font-size: 13px; font-weight: 600;
-            transition: background .15s, border-color .15s, color .15s;
+            box-shadow: none;
+            transition: background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
         }
         .direction-option:hover span { border-color: rgb(var(--s600)); color: rgb(var(--s200)); }
         .direction-long input:checked + span { background: rgb(var(--up) / .10); border-color: rgb(var(--up) / .40); color: rgb(var(--up)); }
@@ -1261,6 +1279,16 @@
         .direction-option input:focus-visible + span { outline: 2px solid rgb(var(--accent)); outline-offset: 2px; }
         .outcome-options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .outcome-be input:checked + span { background: rgb(167 139 250 / .14); border-color: rgb(167 139 250 / .45); color: #a78bfa; }
+        /* Selected trade controls — match New Trade shadow geometry and intensity. */
+        .direction-long { --selection-glow: var(--up); }
+        .direction-short { --selection-glow: var(--down); }
+        .outcome-be { --selection-glow: 167 139 250; }
+        .direction-option input:checked + span {
+            box-shadow: 0 6px 18px rgb(var(--selection-glow) / 0.22);
+        }
+        .direction-option:hover input:checked + span {
+            box-shadow: 0 8px 22px rgb(var(--selection-glow) / 0.35);
+        }
     </style>
 </head>
 <body>
@@ -1398,15 +1426,19 @@
                 </div>
             </section>
 
-            <!-- New trade button (opens the Log Execution drawer) -->
-            <div class="flex justify-end mb-4 fade-up">
+            <!-- Workspace sub-navigation and New trade -->
+            <div class="flex items-center justify-between gap-2 mb-4 fade-up">
+                <div class="workspace-view-tabs no-drag" role="tablist" aria-label="Workspace views">
+                    <button type="button" id="workspace-overview-tab" class="workspace-view-tab" role="tab" aria-selected="true" aria-controls="workspace-overview-panel">Overview</button>
+                    <button type="button" id="workspace-log-tab" class="workspace-view-tab" role="tab" aria-selected="false" aria-controls="workspace-log-panel" tabindex="-1">Log</button>
+                </div>
                 <button type="button" id="new-trade-btn" class="new-trade-btn no-drag">
                     <span class="new-trade-plus">+</span> New trade
                 </button>
             </div>
 
             <!-- Timeline + Calendar -->
-            <section class="fade-up">
+            <section id="workspace-overview-panel" role="tabpanel" aria-labelledby="workspace-overview-tab" class="fade-up">
                 <div class="grid grid-cols-1 xl:grid-cols-[480px_minmax(0,1fr)] gap-6 items-start">
 
                     <!-- LEFT COLUMN -->
@@ -1528,54 +1560,58 @@
                             </div>
                         </div>
 
-                        <!-- Execution Log Ledger (collapsible) -->
-                        <details id="log-section" class="card rounded-xl overflow-hidden">
-                            <summary class="flex items-center justify-between px-5 py-3.5 hover:bg-white/[0.015] transition-colors cursor-pointer list-none">
-                                <div class="flex items-center gap-3">
-                                    <span class="chevron text-slate-500 text-[0.65rem]">▶</span>
-                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-                                    <h2 class="text-xs font-extrabold text-white tracking-[0.12em] uppercase">Execution Log Ledger</h2>
-                                </div>
-                                <div class="flex items-center gap-3 no-drag" onclick="event.stopPropagation()">
-                                    <button id="log-prev" type="button"
-                                        class="w-6 h-6 flex items-center justify-center rounded-md bg-surface-900 border border-slate-700/50 text-slate-500 hover:text-white hover:border-indigo-500/40 transition-all text-[0.7rem]">◀</button>
-                                    <span id="log-month-label" class="text-[0.7rem] font-mono font-bold text-slate-300 min-w-[100px] text-center tabnum no-drag">June 2026</span>
-                                    <button id="log-next" type="button"
-                                        class="w-6 h-6 flex items-center justify-center rounded-md bg-surface-900 border border-slate-700/50 text-slate-500 hover:text-white hover:border-indigo-500/40 transition-all text-[0.7rem]">▶</button>
-                                    <span id="log-count" class="text-[0.6rem] font-mono font-semibold text-slate-600 tabnum no-drag">0 records</span>
-                                </div>
-                            </summary>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left" id="log-table">
-                                    <thead>
-                                        <tr class="border-b border-slate-800/40">
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Date</th>
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Session</th>
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Asset</th>
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Account</th>
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Dir</th>
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Result</th>
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">PnL</th>
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">RR</th>
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Confluences</th>
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Mindset</th>
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Screenshot</th>
-                                            <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="log-body"></tbody>
-                                </table>
-                                <div id="log-empty" class="hidden px-5 py-14 text-center">
-                                    <div class="text-2xl mb-2 opacity-30">📭</div>
-                                    <p class="text-slate-600 text-xs font-medium">No trades in this month</p>
-                                    <p class="text-slate-700 text-[0.65rem] mt-0.5">Navigate to another month using arrows.</p>
-                                </div>
-                            </div>
-                        </details>
+
 
                     </div>
 
                 </div>
+            </section>
+
+            <section id="workspace-log-panel" role="tabpanel" aria-labelledby="workspace-log-tab" hidden>
+            <!-- Execution Log Ledger (collapsible) -->
+            <details id="log-section" class="card rounded-xl overflow-hidden">
+                <summary class="flex items-center justify-between px-5 py-3.5 hover:bg-white/[0.015] transition-colors cursor-pointer list-none">
+                    <div class="flex items-center gap-3">
+                        <span class="chevron text-slate-500 text-[0.65rem]">▶</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                        <h2 class="text-xs font-extrabold text-white tracking-[0.12em] uppercase">Execution Log Ledger</h2>
+                    </div>
+                    <div class="flex items-center gap-3 no-drag" onclick="event.stopPropagation()">
+                        <button id="log-prev" type="button"
+                            class="w-6 h-6 flex items-center justify-center rounded-md bg-surface-900 border border-slate-700/50 text-slate-500 hover:text-white hover:border-indigo-500/40 transition-all text-[0.7rem]">◀</button>
+                        <span id="log-month-label" class="text-[0.7rem] font-mono font-bold text-slate-300 min-w-[100px] text-center tabnum no-drag">June 2026</span>
+                        <button id="log-next" type="button"
+                            class="w-6 h-6 flex items-center justify-center rounded-md bg-surface-900 border border-slate-700/50 text-slate-500 hover:text-white hover:border-indigo-500/40 transition-all text-[0.7rem]">▶</button>
+                        <span id="log-count" class="text-[0.6rem] font-mono font-semibold text-slate-600 tabnum no-drag">0 records</span>
+                    </div>
+                </summary>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left" id="log-table">
+                        <thead>
+                            <tr class="border-b border-slate-800/40">
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Date</th>
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Session</th>
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Asset</th>
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Account</th>
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Dir</th>
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Result</th>
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">PnL</th>
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">RR</th>
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Confluences</th>
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Mindset</th>
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Screenshot</th>
+                                <th class="px-2 py-1.5 text-[0.55rem] font-extrabold text-slate-600 tracking-[0.08em] uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="log-body"></tbody>
+                    </table>
+                    <div id="log-empty" class="hidden px-5 py-14 text-center">
+                        <div class="text-2xl mb-2 opacity-30">📭</div>
+                        <p class="text-slate-600 text-xs font-medium">No trades in this month</p>
+                        <p class="text-slate-700 text-[0.65rem] mt-0.5">Navigate to another month using arrows.</p>
+                    </div>
+                </div>
+            </details>
             </section>
 
         </div>
@@ -2563,6 +2599,7 @@
             document.getElementById('dashboard-container').classList.remove('hidden');
             document.getElementById('note-editor-container').classList.remove('active');
             localStorage.setItem(LAST_VIEW_KEY, 'dashboard');
+            if (window._setWorkspaceView) window._setWorkspaceView('overview');
         };
         window._selectNotePad = selectNotePad;
         window._createNotePad = createNotePad;
@@ -4561,6 +4598,43 @@
             renderTimeline();
             if (window._wsRenderSidebar) window._wsRenderSidebar();
         }
+
+        /* Workspace views: keep the same DOM, trade data and event bindings. */
+        function setWorkspaceView(view) {
+            const isLog = view === 'log';
+            const overviewPanel = document.getElementById('workspace-overview-panel');
+            const logPanel = document.getElementById('workspace-log-panel');
+            const overviewTab = document.getElementById('workspace-overview-tab');
+            const logTab = document.getElementById('workspace-log-tab');
+            overviewPanel.hidden = isLog;
+            logPanel.hidden = !isLog;
+            overviewTab.setAttribute('aria-selected', String(!isLog));
+            logTab.setAttribute('aria-selected', String(isLog));
+            overviewTab.tabIndex = isLog ? -1 : 0;
+            logTab.tabIndex = isLog ? 0 : -1;
+            if (isLog) {
+                document.getElementById('log-section').open = true;
+                renderLog();
+            } else {
+                requestAnimationFrame(() => {
+                    if (!overviewPanel.hidden && !document.getElementById('dashboard-container').classList.contains('hidden') && timelineChart) {
+                        timelineChart.resize();
+                    }
+                });
+            }
+        }
+        window._setWorkspaceView = setWorkspaceView;
+        ['overview', 'log'].forEach(view => {
+            const tab = document.getElementById('workspace-' + view + '-tab');
+            tab.addEventListener('click', () => setWorkspaceView(view));
+            tab.addEventListener('keydown', event => {
+                if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+                event.preventDefault();
+                const next = event.key === 'Home' ? 'overview' : event.key === 'End' ? 'log' : view === 'overview' ? 'log' : 'overview';
+                setWorkspaceView(next);
+                document.getElementById('workspace-' + next + '-tab').focus();
+            });
+        });
 
         /* ══════════════════════════════════════════════════════
            EVENT BINDINGS
