@@ -650,87 +650,76 @@
 
         /* ─── Calendar Styles ────────────────────────────── */
         .calendar-container {
-            padding: 0 8px 8px;
+            padding: 4px 12px 14px;
+            overflow-x: auto;
+            container-type: inline-size;
         }
-        .day-headers {
+        .day-headers, .week-row {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            padding: 10px 4px 4px;
+            grid-template-columns: repeat(7, minmax(100px, 1fr));
+            gap: 8px;
+            min-width: 748px;
         }
+        .day-headers { padding: 10px 0 9px; }
         .day-header {
             text-align: center;
-            font-size: 0.55rem;
-            font-weight: 700;
-            color: rgb(var(--s600));
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-        }
-        .weeks {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .week-row {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
-        .day-cell {
-            min-height: 56px;
-            border-radius: 8px;
-            padding: 6px 6px 4px;
-            position: relative;
-            cursor: default;
-            transition: filter 0.15s, transform 0.1s;
-        }
-        .day-cell.clickable {
-            cursor: pointer;
-        }
-        .day-cell.clickable:hover {
-            filter: brightness(1.15);
-            transform: scale(1.02);
-        }
-        .day-cell.empty {
-            background: transparent;
-        }
-        .day-cell.inactive {
-            background: rgb(var(--line) / 0.2);
-            border: 1px solid rgb(var(--line) / 0.15);
-        }
-        .day-cell.win {
-            background: rgb(var(--up) / 0.12);
-            border: 1px solid rgb(var(--up) / 0.2);
-        }
-        .day-cell.loss {
-            background: rgb(var(--down) / 0.12);
-            border: 1px solid rgb(var(--down) / 0.2);
-        }
-        .day-cell.breakeven {
-            background: rgb(var(--accent) / 0.08);
-            border: 1px solid rgb(var(--accent) / 0.15);
-        }
-        .day-num {
-            font-size: 0.7rem;
+            font-size: 11px;
             font-weight: 600;
             color: rgb(var(--s500));
-            line-height: 1;
         }
-        .day-cell.win .day-num,
-        .day-cell.loss .day-num,
-        .day-cell.breakeven .day-num {
-            color: rgb(var(--s400));
+        .weeks { display: flex; flex-direction: column; gap: 8px; }
+        .day-cell {
+            min-width: 0;
+            min-height: 116px;
+            border-radius: 10px;
+            padding: 13px 10px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: default;
+            transition: filter 0.15s;
         }
-        .pnl {
-            position: absolute;
-            bottom: 4px;
-            left: 6px;
-            font-size: 0.6rem;
-            font-weight: 700;
+        .day-cell.clickable { cursor: pointer; }
+        .day-cell.clickable:hover { filter: brightness(1.15); }
+        .day-cell.empty { background: transparent; }
+        .day-cell.inactive {
+            background: rgb(var(--line) / 0.12);
+            border: 1px solid rgb(var(--line) / 0.15);
         }
-        .pnl.positive { color: rgb(var(--up)); }
-        .pnl.negative { color: rgb(var(--down)); }
-        .pnl.zero     { color: rgb(var(--accent)); }
+        .day-cell.win { background: #123b2b; --day-color: #4ade80; }
+        .day-cell.loss { background: #3d1c24; --day-color: #f87171; }
+        .day-cell.breakeven { background: #302344; --day-color: #a78bfa; }
+        .day-num {
+            font-size: 13px;
+            font-weight: 400;
+            color: rgb(var(--s500));
+            line-height: 1.25;
+        }
+        .day-cell.clickable .day-num { color: #e2e8f0; }
+        .day-cell .pnl {
+            color: var(--day-color);
+            font-size: 19px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+            max-width: 100%;
+        }
+        .day-trade-meta {
+            color: var(--day-color);
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.35;
+            margin-top: auto;
+            overflow-wrap: anywhere;
+        }
+        @container (min-width: 1000px) {
+            .day-cell { padding: 14px; }
+            .day-trade-meta { font-size: 14px; }
+            .day-num { font-size: 14px; }
+        }
 
         /* Summary bar */
         .summary-bar {
@@ -784,6 +773,7 @@
         }
 
         .right-column {
+            min-width: 0;
             display: flex;
             flex-direction: column;
             gap: 1rem;
@@ -1252,6 +1242,25 @@
         }
         .dtp-done:hover { background: rgb(var(--accent-hover)); }
         .dtp-done:active { background: rgb(var(--accent-active)); }
+
+        /* Log Execution — direction selector */
+        .direction-field { min-width: 0; margin: 0; padding: 0; border: 0; }
+        .direction-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+        .direction-option { position: relative; min-width: 0; cursor: pointer; }
+        .direction-option input { position: absolute; width: 1px; height: 1px; opacity: 0; top: 50%; left: 50%; margin: 0; }
+        .direction-option span {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 44px; padding: 8px 6px; border-radius: 12px;
+            background: rgb(var(--field)); border: 1px solid rgb(var(--line));
+            color: rgb(var(--s400)); font-size: 13px; font-weight: 600;
+            transition: background .15s, border-color .15s, color .15s;
+        }
+        .direction-option:hover span { border-color: rgb(var(--s600)); color: rgb(var(--s200)); }
+        .direction-long input:checked + span { background: rgb(var(--up) / .10); border-color: rgb(var(--up) / .40); color: rgb(var(--up)); }
+        .direction-short input:checked + span { background: rgb(var(--down) / .10); border-color: rgb(var(--down) / .40); color: rgb(var(--down)); }
+        .direction-option input:focus-visible + span { outline: 2px solid rgb(var(--accent)); outline-offset: 2px; }
+        .outcome-options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .outcome-be input:checked + span { background: rgb(167 139 250 / .14); border-color: rgb(167 139 250 / .45); color: #a78bfa; }
     </style>
 </head>
 <body>
@@ -1688,25 +1697,36 @@
                                             </div>
                                             <div id="account-dropdown" class="multi-select-dropdown"></div>
                                         </div>
-                                        <div>
-                                            <label for="f-direction" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Direction</label>
-                                            <select id="f-direction" required
-                                                class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 cursor-pointer">
-                                                <option value="">Select direction…</option>
-                                                <option value="LONG">LONG</option>
-                                                <option value="SHORT">SHORT</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label for="f-outcome" class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Trade Outcome</label>
-                                            <select id="f-outcome" required
-                                                class="w-full bg-surface-900 border border-slate-700/50 rounded-lg text-xs text-slate-200 px-3 py-2 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 cursor-pointer">
-                                                <option value="">Select outcome…</option>
-                                                <option value="WIN">🟢 WIN</option>
-                                                <option value="LOSS">🔴 LOSS</option>
-                                                <option value="BE">⚖️ BE</option>
-                                            </select>
-                                        </div>
+                                        <fieldset class="direction-field">
+                                            <legend class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Direction</legend>
+                                            <div class="direction-options">
+                                                <label class="direction-option direction-long">
+                                                    <input type="radio" name="f-direction" value="LONG" required>
+                                                    <span>Long</span>
+                                                </label>
+                                                <label class="direction-option direction-short">
+                                                    <input type="radio" name="f-direction" value="SHORT" required>
+                                                    <span>Short</span>
+                                                </label>
+                                            </div>
+                                        </fieldset>
+                                        <fieldset class="direction-field">
+                                            <legend class="block text-[0.6rem] font-bold text-slate-500 tracking-[0.12em] uppercase mb-1">Trade Outcome</legend>
+                                            <div class="direction-options outcome-options">
+                                                <label class="direction-option direction-long">
+                                                    <input type="radio" name="f-outcome" value="WIN" required>
+                                                    <span>WIN</span>
+                                                </label>
+                                                <label class="direction-option direction-short">
+                                                    <input type="radio" name="f-outcome" value="LOSS" required>
+                                                    <span>LOSS</span>
+                                                </label>
+                                                <label class="direction-option outcome-be">
+                                                    <input type="radio" name="f-outcome" value="BE" required>
+                                                    <span>BE</span>
+                                                </label>
+                                            </div>
+                                        </fieldset>
                                     </div>
 
                                     <div class="space-y-3 mb-4">
@@ -3113,8 +3133,8 @@
 
         function winRate(arr) {
             if (!arr.length) return 0;
-            const wins = arr.filter(t => t.outcome === 'WIN').length;
-            const losses = arr.filter(t => t.outcome === 'LOSS').length;
+            const wins = arr.filter(t => effectiveOutcome(t) === 'WIN').length;
+            const losses = arr.filter(t => effectiveOutcome(t) === 'LOSS').length;
             const total = wins + losses;
             return total === 0 ? 0 : (wins / total) * 100;
         }
@@ -3130,11 +3150,23 @@
 
         function fmtRR(t) {
             if (t.riskAmount > 0) {
-                const c = calcRR(t.outcome, t.pnl, t.riskAmount);
+                const c = calcRR(effectiveOutcome(t), pnlSigned(t), t.riskAmount);
                 return c ? c.text : null;
             }
             // ძველი ველი (თუ არსებობს)
             return (typeof t.rrRatio === 'number' && t.rrRatio > 0) ? '1:' + Number(t.rrRatio.toFixed(2)) : null;
+        }
+
+        function syncPnlInput(resetBE = false) {
+            const outcome = (document.querySelector('input[name="f-outcome"]:checked')?.value || '');
+            const pnl = document.getElementById('f-pnl');
+            if (outcome === 'BE') {
+                pnl.removeAttribute('min');
+                if (resetBE) pnl.value = '0';
+            } else {
+                pnl.min = '0';
+                if (parseFloat(pnl.value) < 0) pnl.value = String(Math.abs(parseFloat(pnl.value)));
+            }
         }
 
         function updateRRPreview() {
@@ -3142,8 +3174,8 @@
             if (!el) return;
             const risk = parseFloat(document.getElementById('f-risk').value);
             const pnl  = parseFloat(document.getElementById('f-pnl').value);
-            const out  = document.getElementById('f-outcome').value;
-            const c = out ? calcRR(out, pnl, risk) : null;
+            const out  = (document.querySelector('input[name="f-outcome"]:checked')?.value || '');
+            const c = out ? calcRR(effectiveOutcome({ outcome: out, pnl }), pnl, risk) : null;
             el.textContent = c ? c.text : '—';
             el.className = c ? c.cls : 'text-slate-300';
         }
@@ -3155,7 +3187,14 @@
 
         function pnlSigned(t) {
             const raw = typeof t.pnl === 'number' ? t.pnl : (typeof t.rr === 'number' ? t.rr : 0);
+            if (t.outcome === 'BE') return raw || 0;
             return t.outcome === 'WIN' ? Math.abs(raw) : -Math.abs(raw);
+        }
+
+        function effectiveOutcome(t) {
+            if (t.outcome !== 'BE') return t.outcome;
+            const pnl = pnlSigned(t);
+            return pnl > 0 ? 'WIN' : pnl < 0 ? 'LOSS' : 'BE';
         }
 
         function formatFileSize(bytes) {
@@ -3247,9 +3286,9 @@
            ══════════════════════════════════════════════════════ */
         function renderTopStats() {
             const total  = trades.length;
-            const wins   = trades.filter(t => t.outcome === 'WIN').length;
-            const losses = trades.filter(t => t.outcome === 'LOSS').length;
-            const be     = trades.filter(t => t.outcome === 'BE').length;
+            const wins   = trades.filter(t => effectiveOutcome(t) === 'WIN').length;
+            const losses = trades.filter(t => effectiveOutcome(t) === 'LOSS').length;
+            const be     = trades.filter(t => effectiveOutcome(t) === 'BE').length;
             const winRateValue = (wins + losses) === 0 ? 0 : (wins / (wins + losses) * 100);
             document.getElementById('stat-winrate').textContent = (wins + losses) > 0 ? winRateValue.toFixed(1) + '%' : '—';
             document.getElementById('stat-wins').textContent    = wins;
@@ -3263,7 +3302,8 @@
             trades.forEach(t => {
                 const day = DAYS_FULL[new Date(t.datetime).getDay()];
                 if (!dayBuckets[day]) dayBuckets[day] = { w: 0, l: 0, pnl: 0 };
-                t.outcome === 'WIN' ? dayBuckets[day].w++ : dayBuckets[day].l++;
+                if (effectiveOutcome(t) === 'WIN') dayBuckets[day].w++;
+                else if (effectiveOutcome(t) === 'LOSS') dayBuckets[day].l++;
                 dayBuckets[day].pnl += pnlSigned(t);
             });
             let bestDay = '—', worstDay = '—', bestPnl = -Infinity, worstPnl = Infinity;
@@ -3305,8 +3345,8 @@
             const sessions  = selectedSessions.length > 0 ? [...selectedSessions] : [];
             const assets    = selectedAssets.length > 0 ? [...selectedAssets] : [];
             const accounts  = [...selectedAccounts];
-            const direction = document.getElementById('f-direction').value;
-            const outcome   = document.getElementById('f-outcome').value;
+            const direction = document.querySelector('input[name="f-direction"]:checked')?.value || '';
+            const outcome   = (document.querySelector('input[name="f-outcome"]:checked')?.value || '');
             const pnlRaw    = parseFloat(document.getElementById('f-pnl').value);
             const riskRaw   = parseFloat(document.getElementById('f-risk').value);
 
@@ -3327,7 +3367,7 @@
                 accounts: accounts,
                 direction,
                 outcome,
-                pnl: Math.abs(pnlRaw),
+                pnl: outcome === 'BE' ? pnlRaw : Math.abs(pnlRaw),
                 riskAmount: isNaN(riskRaw) || riskRaw <= 0 ? null : riskRaw,
                 psych,
                 confluences,
@@ -3423,7 +3463,7 @@
                     <p>Are you sure you want to delete this trade?</p>
                     <div class="bg-surface-900 border border-slate-700/50 rounded-lg p-2 mt-3 text-xs flex justify-between items-center">
                         <span class="font-mono font-bold text-white">${trade.assets ? trade.assets.join(', ') : (trade.asset || 'Unknown')}</span>
-                        <span class="badge bg-slate-500/10 text-slate-400 border-slate-500/20">${trade.outcome}</span>
+                        <span class="badge bg-slate-500/10 text-slate-400 border-slate-500/20">${effectiveOutcome(trade)}</span>
                         <span class="font-mono font-bold ${pnlSigned(trade) >= 0 ? 'text-green-400' : 'text-rose-400'}">${fmtDollar(pnlSigned(trade))}</span>
                     </div>
                     <p class="text-[0.6rem] text-slate-500 mt-3">This action cannot be undone.</p>
@@ -3550,19 +3590,26 @@
 
                         const num = document.createElement('div');
                         num.className = 'day-num';
-                        num.textContent = day;
+                        num.textContent = dayTrades.length > 0
+                            ? dateObj.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' + day
+                            : day;
                         cell.appendChild(num);
 
                         if (dayTrades.length > 0) {
                             const pnlEl = document.createElement('div');
                             pnlEl.className = 'pnl ' + (pnl > 0 ? 'positive' : pnl < 0 ? 'negative' : 'zero');
-                            pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + Math.abs(pnl);
+                            pnlEl.textContent = (pnl > 0 ? '+' : pnl < 0 ? '−' : '') + '$' + Math.abs(pnl).toLocaleString('en-US', {minimumFractionDigits: pnl === 0 ? 2 : 0, maximumFractionDigits: 2});
                             cell.appendChild(pnlEl);
+
+                            const meta = document.createElement('div');
+                            meta.className = 'day-trade-meta';
+                            meta.textContent = dayTrades.length + (dayTrades.length === 1 ? ' Trade' : ' Trades') + ' · ' + (pnl > 0 ? 'WIN' : pnl < 0 ? 'LOSS' : 'BE');
+                            cell.appendChild(meta);
 
                             if (hasComment) {
                                 const icon = document.createElement('span');
                                 icon.textContent = '💬';
-                                icon.style.cssText = 'position:absolute; top:4px; right:6px; font-size:0.6rem; opacity:0.6;';
+                                icon.style.cssText = 'position:absolute; top:5px; right:5px; font-size:9px; opacity:0.65;';
                                 cell.appendChild(icon);
                             }
                         }
@@ -3577,7 +3624,7 @@
             document.getElementById('cal-summary-pnl').className = 'summary-value ' + (totalPnl >= 0 ? 'green' : 'red');
             document.getElementById('cal-summary-wins').textContent = wins;
             document.getElementById('cal-summary-losses').textContent = losses;
-            const wr = tradeDays > 0 ? Math.round((wins / (wins + losses)) * 100) : 0;
+            const wr = wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : 0;
             document.getElementById('cal-summary-wr').textContent = wr + '%';
             document.getElementById('cal-summary-tradedays').textContent = tradeDays;
         }
@@ -3612,9 +3659,9 @@
                     const time = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
                     const pnl = pnlSigned(t);
                     totalPnl += pnl;
-                    const pnlCls = pnl >= 0 ? 'text-green-400' : 'text-rose-400';
-                    const outcomeBadge = t.outcome === 'WIN' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                        t.outcome === 'LOSS' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
+                    const pnlCls = pnl > 0 ? 'text-green-400' : pnl < 0 ? 'text-rose-400' : 'text-slate-400';
+                    const outcomeBadge = effectiveOutcome(t) === 'WIN' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                                        effectiveOutcome(t) === 'LOSS' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
                                         'bg-slate-500/10 text-slate-400 border-slate-500/20';
                     const dirBadge = t.direction === 'LONG' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20';
 
@@ -3626,7 +3673,7 @@
                             <span class="font-mono text-slate-500 w-12">${time}</span>
                             <span class="font-mono font-bold text-white">${assetsStr}</span>
                             <span class="badge ${dirBadge}">${t.direction}</span>
-                            <span class="badge ${outcomeBadge}">${t.outcome}</span>
+                            <span class="badge ${outcomeBadge}">${effectiveOutcome(t)}</span>
                             <span class="font-mono font-bold ${pnlCls}">${fmtDollar(pnl)}</span>
                             ${fmtRR(t) ? `<span class="badge border bg-slate-500/10 text-slate-300 border-slate-500/20">RR ${fmtRR(t)}</span>` : ''}
                             ${sessionsStr ? `<span class="text-slate-500 text-[0.5rem]">${sessionsStr}</span>` : ''}
@@ -3807,10 +3854,10 @@
             if (rrTrades.length) {
                 const groups = {};
                 rrTrades.forEach(t => {
-                    const r = Math.round(Math.abs(t.pnl) / t.riskAmount * 10) / 10;
+                    const r = Math.round(Math.abs(pnlSigned(t)) / t.riskAmount * 10) / 10;
                     let key, label, kind, sortVal;
-                    if (t.outcome === 'WIN')       { kind = 'win';  label = '1:' + r;      sortVal = r; }
-                    else if (t.outcome === 'LOSS') { kind = 'loss'; label = '-' + r + 'R'; sortVal = -r; }
+                    if (effectiveOutcome(t) === 'WIN')       { kind = 'win';  label = '1:' + r;      sortVal = r; }
+                    else if (effectiveOutcome(t) === 'LOSS') { kind = 'loss'; label = '-' + r + 'R'; sortVal = -r; }
                     else                           { kind = 'be';   label = '1:0';         sortVal = 0; }
                     key = kind + '|' + label;
                     if (!groups[key]) groups[key] = { label, kind, sortVal, count: 0 };
@@ -3931,8 +3978,8 @@
             });
 
             const totalTrades = filtered.length;
-            const wins = filtered.filter(t => t.outcome === 'WIN').length;
-            const losses = filtered.filter(t => t.outcome === 'LOSS').length;
+            const wins = filtered.filter(t => effectiveOutcome(t) === 'WIN').length;
+            const losses = filtered.filter(t => effectiveOutcome(t) === 'LOSS').length;
             const winRateVal = (wins + losses) === 0 ? 0 : (wins / (wins + losses) * 100);
             const netPnl = filtered.reduce((sum, t) => sum + pnlSigned(t), 0);
             const prevNetPnl = prevFiltered.reduce((sum, t) => sum + pnlSigned(t), 0);
@@ -4130,9 +4177,9 @@
                     : '<span class="badge bg-rose-500/10 text-rose-400 border border-rose-500/20">SHORT</span>';
 
                 let outBadge;
-                if (t.outcome === 'WIN') {
+                if (effectiveOutcome(t) === 'WIN') {
                     outBadge = '<span class="badge bg-green-500/10 text-green-400 border border-green-500/20">WIN</span>';
-                } else if (t.outcome === 'LOSS') {
+                } else if (effectiveOutcome(t) === 'LOSS') {
                     outBadge = '<span class="badge bg-rose-500/10 text-rose-400 border border-rose-500/20">LOSS</span>';
                 } else {
                     outBadge = '<span class="badge bg-slate-500/10 text-slate-400 border border-slate-500/20">BE</span>';
@@ -4153,7 +4200,7 @@
                 }
 
                 const pnlVal = pnlSigned(t);
-                const pnlCls = pnlVal >= 0 ? 'text-green-400' : 'text-rose-400';
+                const pnlCls = pnlVal > 0 ? 'text-green-400' : pnlVal < 0 ? 'text-rose-400' : 'text-slate-400';
 
                 let screenshotHtml = '—';
                 if (t.attachmentUrl) {
@@ -4219,9 +4266,14 @@
 
             selectedAccounts = Array.isArray(trade.accounts) ? [...trade.accounts] : (trade.account ? [trade.account] : []);
             renderAccountPills();
-            document.getElementById('f-direction').value = trade.direction;
-            document.getElementById('f-outcome').value = trade.outcome;
+            document.querySelectorAll('input[name="f-direction"]').forEach(input => {
+                input.checked = input.value === trade.direction;
+            });
+            document.querySelectorAll('input[name="f-outcome"]').forEach(input => {
+                input.checked = input.value === trade.outcome;
+            });
             document.getElementById('f-pnl').value = trade.pnl;
+            syncPnlInput();
             document.getElementById('f-risk').value = (typeof trade.riskAmount === 'number') ? trade.riskAmount : '';
             updateRRPreview();
             document.getElementById('f-comment').value = trade.comment || '';
@@ -4515,8 +4567,13 @@
            ══════════════════════════════════════════════════════ */
         document.getElementById('trade-form').addEventListener('submit', handleSubmit);
         ['f-risk', 'f-pnl'].forEach(id => document.getElementById(id).addEventListener('input', updateRRPreview));
-        document.getElementById('f-outcome').addEventListener('change', updateRRPreview);
-        document.getElementById('trade-form').addEventListener('reset', () => setTimeout(updateRRPreview, 0));
+        document.querySelectorAll('input[name="f-outcome"]').forEach(input => {
+            input.addEventListener('change', () => {
+                syncPnlInput(true);
+                updateRRPreview();
+            });
+        });
+        document.getElementById('trade-form').addEventListener('reset', () => setTimeout(() => { syncPnlInput(); updateRRPreview(); }, 0));
 
         document.getElementById('cal-prev').addEventListener('click', function (e) {
             e.preventDefault();
