@@ -295,14 +295,19 @@ ipcMain.handle('workspace:delete-attachment', async (_event, attachment) => {
 });
 
 // Window buttons (minimize / maximize / close) follow the app theme
+const WINDOW_THEMES = {
+    navy:   { background: '#0F1117', overlay: '#131723', symbol: '#A8AFC0' },
+    amoled: { background: '#000000', overlay: '#0A0A0C', symbol: '#B4B3B8' }
+};
+
 ipcMain.on('theme:set', (_event, name) => {
     if (!mainWindow) return;
-    const light = name === 'light';
-    mainWindow.setBackgroundColor(light ? '#E4E7EC' : '#101012');
+    const theme = WINDOW_THEMES[name] || WINDOW_THEMES.navy;
+    mainWindow.setBackgroundColor(theme.background);
     if (process.platform !== 'darwin' && mainWindow.setTitleBarOverlay) {
         mainWindow.setTitleBarOverlay({
-            color: light ? '#F1F3F6' : '#141316',
-            symbolColor: light ? '#475569' : '#B4B3B8',
+            color: theme.overlay,
+            symbolColor: theme.symbol,
             height: 38
         });
     }
@@ -327,11 +332,11 @@ function createWindow() {
         height: 940,
         minWidth: 1024,
         minHeight: 700,
-        backgroundColor: '#101012',
+        backgroundColor: '#0F1117',
         titleBarStyle: 'hidden',
         titleBarOverlay: {
-            color: '#141316',
-            symbolColor: '#B4B3B8',
+            color: '#131723',
+            symbolColor: '#A8AFC0',
             height: 38
         },
         autoHideMenuBar: true,

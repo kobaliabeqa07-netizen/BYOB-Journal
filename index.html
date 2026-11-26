@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚡ BYOB Journal</title>
     <script>
-        try { if (localStorage.getItem('byob_theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (_) {}
+        try { if (localStorage.getItem('byob_theme') === 'amoled') document.documentElement.setAttribute('data-theme', 'amoled'); } catch (_) {}
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,7 +21,7 @@
                         mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
-                        // every colour comes from the CSS variables below (dark / light)
+                        // every colour comes from the CSS variables below (navy / amoled)
                         white: 'rgb(var(--white) / <alpha-value>)',
                         surface: { 950: 'rgb(var(--f950) / <alpha-value>)', 900: 'rgb(var(--f900) / <alpha-value>)', 800: 'rgb(var(--f800) / <alpha-value>)', 700: 'rgb(var(--f700) / <alpha-value>)', 600: 'rgb(var(--f600) / <alpha-value>)' },
                         slate: { 50: 'rgb(var(--s50) / <alpha-value>)', 100: 'rgb(var(--s100) / <alpha-value>)', 200: 'rgb(var(--s200) / <alpha-value>)', 300: 'rgb(var(--s300) / <alpha-value>)', 400: 'rgb(var(--s400) / <alpha-value>)', 500: 'rgb(var(--s500) / <alpha-value>)', 600: 'rgb(var(--s600) / <alpha-value>)', 700: 'rgb(var(--s700) / <alpha-value>)', 800: 'rgb(var(--s800) / <alpha-value>)', 900: 'rgb(var(--s900) / <alpha-value>)' },
@@ -42,44 +42,46 @@
         /* ═══════════════════════════════════════════════════════ */
         /* CSS VARIABLES — THEME COLORS                          */
         /* ═══════════════════════════════════════════════════════ */
+        /* Theme 1 — NAVY (main, default) */
         :root {
-            --bg: 16 16 18;
-            --card: 20 19 22;
-            --side: 18 18 20;
-            --side2: 16 16 18;
-            --menu: 24 23 27;
-            --field: 15 15 17;
-            --line: 68 67 72;
+            --bg: 15 17 23;
+            --card: 19 23 35;
+            --side: 12 14 20;
+            --side2: 10 12 18;
+            --menu: 24 28 42;
+            --field: 11 15 25;
+            --line: 48 54 70;
             --ink: 255 255 255;
-            --accent: 45 212 191;
-            --accent-hover: 94 234 212;
-            --accent-active: 20 184 166;
+            --accent: 34 201 122;
+            --accent-hover: 62 217 143;
+            --accent-active: 26 168 100;
             --on-accent: 15 17 23;
-            --up: 99 203 143;
+            --up: 34 201 122;
             --down: 236 133 147;
             --white: 245 245 247;
             --s50: 248 250 252;
             --s100: 241 245 249;
-            --s200: 230 230 233;
-            --s300: 213 213 217;
-            --s400: 180 179 184;
-            --s500: 146 145 150;
-            --s600: 125 124 129;
-            --s700: 84 83 89;
-            --s800: 46 45 50;
-            --s900: 22 21 25;
-            --f950: 10 10 12;
-            --f900: 15 15 17;
-            --f800: 20 19 22;
-            --f700: 27 26 30;
-            --f600: 36 35 40;
-            --a200: 153 246 228;
-            --a300: 94 234 212;
-            --a500: 20 184 166;
+            --s200: 226 230 238;
+            --s300: 208 214 226;
+            --s400: 168 175 192;
+            --s500: 135 142 160;
+            --s600: 113 120 138;
+            --s700: 74 80 98;
+            --s800: 38 43 58;
+            --s900: 20 24 36;
+            --f950: 9 11 16;
+            --f900: 13 16 24;
+            --f800: 19 23 35;
+            --f700: 26 30 44;
+            --f600: 34 39 56;
+            --a200: 167 243 205;
+            --a300: 62 217 143;
+            --a500: 26 168 100;
             --amber: 251 191 36;
             --cyan: 34 211 238;
             --orange: 251 146 60;
             --pill-strength: 100%;
+            color-scheme: dark;
             --bg-body: rgb(var(--bg));
             --bg-header: rgb(var(--card) / 0.94);
             --bg-sidebar-start: rgb(var(--side));
@@ -94,57 +96,29 @@
             --bg-slider: rgb(var(--field));
         }
 
-        :root[data-theme="light"] {
-            --bg: 228 231 236;
-            --card: 241 243 246;
-            --side: 236 238 242;
-            --side2: 233 235 240;
-            --menu: 246 247 249;
-            --field: 250 251 252;
-            --line: 170 180 196;
-            --ink: 15 23 42;
-            --accent: 15 118 110;
-            --accent-hover: 17 94 89;
-            --accent-active: 19 78 74;
-            --on-accent: 255 255 255;
-            --up: 18 105 52;
-            --down: 172 18 54;
-            --white: 15 23 42;
-            --s50: 2 6 23;
-            --s100: 15 23 42;
-            --s200: 23 32 46;
-            --s300: 44 55 72;
-            --s400: 58 68 88;
-            --s500: 76 86 106;
-            --s600: 86 97 117;
-            --s700: 150 160 177;
-            --s800: 204 211 221;
-            --s900: 241 245 249;
-            --f950: 224 228 234;
-            --f900: 250 251 252;
-            --f800: 234 237 241;
-            --f700: 226 230 236;
-            --f600: 214 220 229;
-            --a200: 19 78 74;
-            --a300: 17 94 89;
-            --a500: 15 118 110;
-            --amber: 139 84 6;
-            --cyan: 13 100 124;
-            --orange: 172 55 10;
-            --pill-strength: 55%;
-            color-scheme: light;
-            --bg-body: rgb(var(--bg));
-            --bg-header: rgb(var(--card) / 0.94);
-            --bg-sidebar-start: rgb(var(--side));
-            --bg-sidebar-end: rgb(var(--side2));
-            --bg-card: rgb(var(--card));
-            --bg-stat-start: rgb(var(--card));
-            --bg-stat-end: rgb(var(--card));
-            --bg-menu: rgb(var(--menu));
-            --bg-toggle: rgb(var(--field) / 0.8);
-            --bg-input: rgb(var(--field));
-            --bg-canvas-border: rgb(var(--card));
-            --bg-slider: rgb(var(--field));
+        /* Theme 2 — AMOLED black (secondary). Only the colours that differ from navy. */
+        :root[data-theme="amoled"] {
+            --bg: 0 0 0;
+            --card: 10 10 12;
+            --side: 5 5 6;
+            --side2: 3 3 4;
+            --menu: 16 16 18;
+            --field: 6 6 8;
+            --line: 42 42 46;
+            --on-accent: 15 17 23;
+            --s200: 230 230 233;
+            --s300: 213 213 217;
+            --s400: 180 179 184;
+            --s500: 146 145 150;
+            --s600: 125 124 129;
+            --s700: 80 80 85;
+            --s800: 36 36 40;
+            --s900: 14 14 16;
+            --f950: 0 0 0;
+            --f900: 6 6 8;
+            --f800: 10 10 12;
+            --f700: 18 18 20;
+            --f600: 28 28 31;
         }
 
         /* ═══════════════════════════════════════════════════════ */
@@ -174,7 +148,7 @@
             border: 1px solid rgb(var(--line) / 0.6);
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        :root:not([data-theme="light"]) input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
         }
         .card:hover {
@@ -641,9 +615,6 @@
             transition: all 0.2s ease;
         }
         #theme-toggle:hover { color: rgb(var(--accent)); border-color: rgb(var(--accent) / 0.5); }
-        #theme-toggle .icon-moon { display: none; }
-        :root[data-theme="light"] #theme-toggle .icon-moon { display: block; }
-        :root[data-theme="light"] #theme-toggle .icon-sun { display: none; }
 
         /* ─── Delete Modal ─── */
         #delete-modal {
@@ -1170,7 +1141,6 @@
             transition: opacity .25s ease, visibility 0s linear .25s;
         }
         .drawer-overlay.open { opacity: 1; visibility: visible; transition-delay: 0s; }
-        :root[data-theme="light"] .drawer-overlay { background: rgba(15, 23, 42, 0.35); }
 
         .trade-drawer {
             position: fixed; top: 38px; right: 0; bottom: 0; z-index: 70;
@@ -1228,7 +1198,6 @@
             opacity: 0; visibility: hidden; transform: translateY(-4px);
             transition: opacity .15s ease, transform .15s ease, visibility 0s linear .15s;
         }
-        :root[data-theme="light"] .dtp-pop { box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18); }
         .dtp.open .dtp-pop { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
         .dtp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
         .dtp-month { font-size: 0.8rem; font-weight: 700; color: rgb(var(--white)); letter-spacing: 0.02em; }
@@ -1301,9 +1270,8 @@
             </div>
 
             <div class="no-drag flex items-center flex-wrap gap-1.5" style="margin-right: 140px;">
-                <button type="button" id="theme-toggle" title="Light / Dark" aria-label="Switch light or dark theme">
-                    <svg class="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
-                    <svg class="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+                <button type="button" id="theme-toggle" title="Theme: Navy / AMOLED" aria-label="Switch between Navy and AMOLED theme">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"></path></svg>
                 </button>
                 <div class="flex items-center gap-1 bg-surface-800/80 border border-slate-700/30 rounded-full px-1.5 py-0.5">
                     <span class="w-1 h-1 rounded-full bg-emerald-400 pulse-glow" style="color: rgb(var(--up));"></span>
@@ -4508,19 +4476,23 @@
         /* ══════════════════════════════════════════════════════════
            THEME SELECTOR
            ══════════════════════════════════════════════════════════ */
-        // Two themes: dark (default) and light. Colours live in the CSS variables at the top.
-        let currentTheme = localStorage.getItem('byob_theme') === 'light' ? 'light' : 'dark';
+        // Two dark themes: 'navy' (main, default) and 'amoled' (pure black). Colours live in the CSS variables at the top.
+        const THEME_LABELS = { navy: 'Navy', amoled: 'AMOLED' };
+        let currentTheme = localStorage.getItem('byob_theme') === 'amoled' ? 'amoled' : 'navy';
 
         function applyTheme(themeName) {
-            currentTheme = themeName;
-            document.documentElement.setAttribute('data-theme', themeName);
-            localStorage.setItem('byob_theme', themeName);
-            if (window.byobTheme) window.byobTheme.set(themeName);
+            currentTheme = themeName === 'amoled' ? 'amoled' : 'navy';
+            if (currentTheme === 'amoled') document.documentElement.setAttribute('data-theme', 'amoled');
+            else document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('byob_theme', currentTheme);
+            const toggle = document.getElementById('theme-toggle');
+            if (toggle) toggle.title = 'Theme: ' + THEME_LABELS[currentTheme] + ' (click to switch)';
+            if (window.byobTheme) window.byobTheme.set(currentTheme);
             if (timelineChart) renderTimeline();
         }
 
         document.getElementById('theme-toggle').addEventListener('click', function() {
-            applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+            applyTheme(currentTheme === 'navy' ? 'amoled' : 'navy');
         });
 
         applyTheme(currentTheme);
