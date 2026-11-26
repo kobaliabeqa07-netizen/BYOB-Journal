@@ -294,6 +294,20 @@ ipcMain.handle('workspace:delete-attachment', async (_event, attachment) => {
     return { ok: true };
 });
 
+// Window buttons (minimize / maximize / close) follow the app theme
+ipcMain.on('theme:set', (_event, name) => {
+    if (!mainWindow) return;
+    const light = name === 'light';
+    mainWindow.setBackgroundColor(light ? '#E4E7EC' : '#0F1117');
+    if (process.platform !== 'darwin' && mainWindow.setTitleBarOverlay) {
+        mainWindow.setTitleBarOverlay({
+            color: light ? '#F1F3F6' : '#171A23',
+            symbolColor: light ? '#475569' : '#94a3b8',
+            height: 38
+        });
+    }
+});
+
 function showMainWindow() {
     if (!mainWindow || didShowMainWindow) {
         return;

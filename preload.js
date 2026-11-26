@@ -41,6 +41,10 @@ contextBridge.exposeInMainWorld('byobWorkspace', {
     deleteAttachment: (attachment) => ipcRenderer.invoke('workspace:delete-attachment', attachment)
 });
 
+contextBridge.exposeInMainWorld('byobTheme', {
+    set: (name) => ipcRenderer.send('theme:set', name)
+});
+
 contextBridge.exposeInMainWorld('byobUpdater', {
     check: () => ipcRenderer.invoke('update:check'),
     download: () => ipcRenderer.invoke('update:download'),

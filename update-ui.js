@@ -8,17 +8,17 @@
     var style = document.createElement('style');
     style.textContent = [
         '.upd-box{position:fixed;right:20px;bottom:20px;z-index:200;width:340px;max-width:calc(100vw - 40px);',
-        'background:var(--bg-card,#11141c);border:1px solid rgba(99,102,241,.45);border-radius:14px;padding:18px;',
-        'box-shadow:0 20px 50px rgba(0,0,0,.55);color:#cbd5e1;font-family:Inter,"Segoe UI",system-ui,sans-serif;}',
+        'background:rgb(var(--card));border:1px solid rgb(var(--accent) / .5);border-radius:14px;padding:18px;',
+        'box-shadow:0 20px 50px rgba(0,0,0,.25);color:rgb(var(--s300));font-family:Inter,"Segoe UI",system-ui,sans-serif;}',
         '.upd-box[hidden],.upd-box [hidden]{display:none!important;}',
-        '.upd-title{margin:0 0 6px;font-size:15px;font-weight:700;color:#fff;}',
+        '.upd-title{margin:0 0 6px;font-size:15px;font-weight:700;color:rgb(var(--white));}',
         '.upd-text{margin:0;font-size:13px;line-height:1.5;white-space:pre-line;max-height:140px;overflow-y:auto;}',
-        '.upd-bar{height:6px;margin-top:14px;background:#1e293b;border-radius:99px;overflow:hidden;}',
-        '.upd-fill{height:100%;width:0;background:#6366f1;transition:width .25s ease;}',
+        '.upd-bar{height:6px;margin-top:14px;background:rgb(var(--s800));border-radius:99px;overflow:hidden;}',
+        '.upd-fill{height:100%;width:0;background:rgb(var(--accent));transition:width .25s ease;}',
         '.upd-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;}',
         '.upd-btn{border:0;border-radius:8px;padding:8px 14px;font:600 13px Inter,"Segoe UI",system-ui,sans-serif;cursor:pointer;}',
-        '.upd-primary{background:#6366f1;color:#fff;}.upd-primary:hover{background:#4f46e5;}',
-        '.upd-ghost{background:transparent;color:#94a3b8;}.upd-ghost:hover{color:#fff;}'
+        '.upd-primary{background:#2563eb;color:#fff;}.upd-primary:hover{background:#1d4ed8;}',
+        '.upd-ghost{background:transparent;color:rgb(var(--s400));}.upd-ghost:hover{color:rgb(var(--white));}'
     ].join('');
     document.head.appendChild(style);
 
