@@ -43,37 +43,39 @@
         /* CSS VARIABLES — THEME COLORS                          */
         /* ═══════════════════════════════════════════════════════ */
         :root {
-            --bg: 17 15 13;
-            --card: 26 24 21;
-            --side: 21 19 16;
-            --side2: 19 17 15;
-            --menu: 30 28 25;
-            --field: 20 18 15;
-            --line: 69 66 62;
+            --bg: 16 16 18;
+            --card: 20 19 22;
+            --side: 18 18 20;
+            --side2: 16 16 18;
+            --menu: 24 23 27;
+            --field: 15 15 17;
+            --line: 68 67 72;
             --ink: 255 255 255;
-            --accent: 116 170 240;
+            --accent: 45 212 191;
+            --accent-hover: 94 234 212;
+            --accent-active: 20 184 166;
             --on-accent: 15 17 23;
             --up: 99 203 143;
             --down: 236 133 147;
-            --white: 243 241 238;
+            --white: 245 245 247;
             --s50: 248 250 252;
             --s100: 241 245 249;
-            --s200: 231 229 226;
-            --s300: 215 213 210;
-            --s400: 182 180 177;
-            --s500: 162 160 157;
-            --s600: 140 138 135;
-            --s700: 90 87 83;
-            --s800: 52 49 45;
-            --s900: 24 22 19;
-            --f950: 12 10 8;
-            --f900: 20 18 15;
-            --f800: 23 21 18;
-            --f700: 33 31 28;
-            --f600: 44 41 38;
-            --a200: 195 219 250;
-            --a300: 158 195 245;
-            --a500: 59 130 246;
+            --s200: 230 230 233;
+            --s300: 213 213 217;
+            --s400: 180 179 184;
+            --s500: 146 145 150;
+            --s600: 125 124 129;
+            --s700: 84 83 89;
+            --s800: 46 45 50;
+            --s900: 22 21 25;
+            --f950: 10 10 12;
+            --f900: 15 15 17;
+            --f800: 20 19 22;
+            --f700: 27 26 30;
+            --f600: 36 35 40;
+            --a200: 153 246 228;
+            --a300: 94 234 212;
+            --a500: 20 184 166;
             --amber: 251 191 36;
             --cyan: 34 211 238;
             --orange: 251 146 60;
@@ -101,7 +103,9 @@
             --field: 250 251 252;
             --line: 170 180 196;
             --ink: 15 23 42;
-            --accent: 29 86 205;
+            --accent: 15 118 110;
+            --accent-hover: 17 94 89;
+            --accent-active: 19 78 74;
             --on-accent: 255 255 255;
             --up: 18 105 52;
             --down: 172 18 54;
@@ -121,9 +125,9 @@
             --f800: 234 237 241;
             --f700: 226 230 236;
             --f600: 214 220 229;
-            --a200: 30 64 175;
-            --a300: 29 78 216;
-            --a500: 29 86 205;
+            --a200: 19 78 74;
+            --a300: 17 94 89;
+            --a500: 15 118 110;
             --amber: 139 84 6;
             --cyan: 13 100 124;
             --orange: 172 55 10;
@@ -1423,7 +1427,7 @@
 
                                     <div class="flex justify-center w-full">
                                         <button type="submit" id="btn-submit"
-                                            class="btn-commit w-full sm:w-auto bg-[#2563EB] hover:bg-[#1D4ED8] active:bg-[#1E40AF] text-[#fff] text-xs font-bold py-2.5 px-10 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 tracking-wide uppercase">
+                                            class="btn-commit w-full sm:w-auto bg-[rgb(var(--accent))] hover:bg-[rgb(var(--accent-hover))] active:bg-[rgb(var(--accent-active))] text-[rgb(var(--on-accent))] text-xs font-bold py-2.5 px-10 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-[color:rgb(var(--accent)/0.2)] hover:shadow-[color:rgb(var(--accent)/0.4)] tracking-wide uppercase">
                                             <span>⚡</span> Commit Execution
                                         </button>
                                     </div>
@@ -4079,7 +4083,7 @@
 
             const btn = document.getElementById('btn-submit');
             btn.innerHTML = '<span>✏️</span> Update Trade';
-            btn.classList.add('bg-[#2563EB]', 'hover:bg-[#1D4ED8]', 'active:bg-[#1E40AF]');
+            btn.classList.add('bg-[rgb(var(--accent))]', 'hover:bg-[rgb(var(--accent-hover))]', 'active:bg-[rgb(var(--accent-active))]');
 
             let cancelBtn = document.getElementById('edit-cancel');
             if (!cancelBtn) {
@@ -4124,8 +4128,8 @@
 
             const btn = document.getElementById('btn-submit');
             btn.innerHTML = '<span>⚡</span> Commit Execution';
-            btn.classList.remove('bg-[#2563EB]', 'hover:bg-[#1D4ED8]', 'active:bg-[#1E40AF]');
-            btn.classList.add('bg-[#2563EB]', 'hover:bg-[#1D4ED8]', 'active:bg-[#1E40AF]');
+            btn.classList.remove('bg-[rgb(var(--accent))]', 'hover:bg-[rgb(var(--accent-hover))]', 'active:bg-[rgb(var(--accent-active))]');
+            btn.classList.add('bg-[rgb(var(--accent))]', 'hover:bg-[rgb(var(--accent-hover))]', 'active:bg-[rgb(var(--accent-active))]');
             const cancelBtn = document.getElementById('edit-cancel');
             if (cancelBtn) cancelBtn.style.display = 'none';
             clearAttachment();

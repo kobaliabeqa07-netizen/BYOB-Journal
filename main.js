@@ -298,11 +298,11 @@ ipcMain.handle('workspace:delete-attachment', async (_event, attachment) => {
 ipcMain.on('theme:set', (_event, name) => {
     if (!mainWindow) return;
     const light = name === 'light';
-    mainWindow.setBackgroundColor(light ? '#E4E7EC' : '#110F0D');
+    mainWindow.setBackgroundColor(light ? '#E4E7EC' : '#101012');
     if (process.platform !== 'darwin' && mainWindow.setTitleBarOverlay) {
         mainWindow.setTitleBarOverlay({
-            color: light ? '#F1F3F6' : '#1A1815',
-            symbolColor: light ? '#475569' : '#B6B4B1',
+            color: light ? '#F1F3F6' : '#141316',
+            symbolColor: light ? '#475569' : '#B4B3B8',
             height: 38
         });
     }
@@ -327,11 +327,11 @@ function createWindow() {
         height: 940,
         minWidth: 1024,
         minHeight: 700,
-        backgroundColor: '#110F0D',
+        backgroundColor: '#101012',
         titleBarStyle: 'hidden',
         titleBarOverlay: {
-            color: '#1A1815',
-            symbolColor: '#B6B4B1',
+            color: '#141316',
+            symbolColor: '#B4B3B8',
             height: 38
         },
         autoHideMenuBar: true,

@@ -17,7 +17,7 @@
         '.upd-fill{height:100%;width:0;background:rgb(var(--accent));transition:width .25s ease;}',
         '.upd-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;}',
         '.upd-btn{border:0;border-radius:8px;padding:8px 14px;font:600 13px Inter,"Segoe UI",system-ui,sans-serif;cursor:pointer;}',
-        '.upd-primary{background:#2563eb;color:#fff;}.upd-primary:hover{background:#1d4ed8;}',
+        '.upd-primary{background:rgb(var(--accent));color:rgb(var(--on-accent));}.upd-primary:hover{background:rgb(var(--accent-hover));}',
         '.upd-ghost{background:transparent;color:rgb(var(--s400));}.upd-ghost:hover{color:rgb(var(--white));}'
     ].join('');
     document.head.appendChild(style);
