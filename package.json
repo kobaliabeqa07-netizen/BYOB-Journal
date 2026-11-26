@@ -1,6 +1,6 @@
 {
   "name": "byob-journal",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "BYOB Journal — Be Your Own Boss. A premium ICT trading journal desktop application.",
   "author": "BYOB Journal",
   "license": "MIT",
@@ -21,12 +21,7 @@
     "icon": "icon.ico",
     "win": {
       "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        }
+        { "target": "nsis", "arch": ["x64"] }
       ],
       "icon": "icon.ico"
     },
@@ -52,8 +47,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "GITHUB_USERNAME",
-        "repo": "byob-journal"
+        "owner": "kobaliabeqa07-netizen",
+        "repo": "BYOB-Journal"
       }
     ]
   },

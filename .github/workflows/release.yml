@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Check if this version is already released
+        id: check
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            echo "new=false" >> "$GITHUB_OUTPUT"
+            echo "Version $VERSION is already released. Nothing to do."
+          else
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build installer
+        if: steps.check.outputs.new == 'true'
+        run: |
+          npm ci
+          npm run build
+
+      - name: Publish release
+        if: steps.check.outputs.new == 'true'
+        shell: bash
+        env:
+          VERSION: ${{ steps.check.outputs.version }}
+          NOTES: ${{ github.event.head_commit.message }}
+        run: |
+          FILE="dist/BYOB-Journal-Setup-$VERSION.exe"
+          gh release create "v$VERSION" "$FILE" "$FILE.blockmap" dist/latest.yml \
+            --target "$GITHUB_SHA" --title "$VERSION" --notes "${NOTES:-Version $VERSION}"
