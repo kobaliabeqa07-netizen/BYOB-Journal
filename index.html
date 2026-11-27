@@ -656,9 +656,9 @@
         }
         .day-headers, .week-row {
             display: grid;
-            grid-template-columns: repeat(7, minmax(100px, 1fr));
+            grid-template-columns: repeat(7, minmax(100px, 1fr)) minmax(124px, 1.15fr);
             gap: 8px;
-            min-width: 748px;
+            min-width: 880px;
         }
         .day-headers { padding: 10px 0 9px; }
         .day-header {
@@ -720,6 +720,34 @@
             .day-trade-meta { font-size: 14px; }
             .day-num { font-size: 14px; }
         }
+
+        .weekly-header { color: rgb(var(--s500)); border-left: 1px solid rgb(var(--line) / .5); }
+        .weekly-total {
+            min-width: 0; min-height: 116px; border-radius: 10px;
+            padding: 10px 7px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 5px;
+            border: 1px solid rgb(var(--line) / .35);
+            background: rgb(var(--line) / .12); color: rgb(var(--s500));
+            text-align: center; font-variant-numeric: tabular-nums;
+            transition: filter .15s, box-shadow .15s;
+        }
+        .weekly-total.win { background: #123b2b; color: #4ade80; border-color: #28724e; }
+        .weekly-total.loss { background: #3d1c24; color: #f87171; border-color: #85404f; }
+        .weekly-total.breakeven { background: #302344; color: #a78bfa; border-color: #7053a0; }
+        .weekly-total.best { box-shadow: inset 0 0 14px #4ade8020, 0 0 9px #4ade8040; border-color: #4ade80; }
+        .weekly-total:hover, .weekly-total:focus-visible { filter: brightness(1.12); outline: 1px solid currentColor; outline-offset: -2px; }
+        .weekly-pnl { font-size: 17px; font-weight: 700; overflow-wrap: anywhere; max-width: 100%; }
+        .weekly-wr { font-size: 13px; font-weight: 600; }
+        .weekly-count, .weekly-best { font-size: 10px; }
+        .weekly-best { font-weight: 700; letter-spacing: .05em; }
+        .weekly-tooltip {
+            position: fixed; z-index: 9999; pointer-events: none;
+            background: var(--bg-card); border: 1px solid rgb(var(--line) / .8);
+            border-radius: 10px; padding: 12px 15px; min-width: 174px;
+            box-shadow: 0 8px 28px #0008; color: rgb(var(--s300)); font-size: 12px;
+        }
+        .weekly-tooltip[hidden] { display: none; }
+        .weekly-tooltip div { display: flex; justify-content: space-between; gap: 18px; padding: 3px 0; }
 
         /* Summary bar */
         .summary-bar {
@@ -1558,6 +1586,7 @@
                                     <div class="day-header">Thu</div>
                                     <div class="day-header">Fri</div>
                                     <div class="day-header">Sat</div>
+                                    <div class="day-header weekly-header">Weekly Total</div>
                                 </div>
                                 <div id="cal-grid" class="weeks"></div>
                             </div>
@@ -3591,6 +3620,19 @@
             calMonth = now.getMonth();
         }
 
+        function weeklyStats(list) {
+            let wins = 0, losses = 0, be = 0;
+            for (const t of list) {
+                const outcome = effectiveOutcome(t);
+                if (outcome === 'WIN') wins++;
+                else if (outcome === 'LOSS') losses++;
+                else if (outcome === 'BE') be++;
+            }
+            const pnl = Math.round(list.reduce((sum, t) => sum + pnlSigned(t), 0) * 100) / 100;
+            return { pnl, wins, losses, be, count: list.length,
+                wr: wins + losses ? (100 * wins / (wins + losses)).toFixed(1) + '%' : '—' };
+        }
+
         function renderCalendar() {
             const y = calYear, m = calMonth;
             document.getElementById('cal-month-label').textContent = MONTHS_FULL[m] + ' ' + y;
@@ -3599,6 +3641,7 @@
             const daysInMonth = new Date(y, m+1, 0).getDate();
 
             const grid = document.getElementById('cal-grid');
+            document.getElementById('weekly-tooltip')?.remove();
             grid.innerHTML = '';
 
             let cells = [];
@@ -3606,6 +3649,21 @@
             for (let d = 1; d <= daysInMonth; d++) cells.push(d);
             while (cells.length % 7 !== 0) cells.push(null);
 
+            const weekly = Array.from({length: cells.length / 7}, (_, w) => {
+                const days = cells.slice(w * 7, w * 7 + 7).filter(d => d !== null);
+                return weeklyStats(trades.filter(t => {
+                    const d = new Date(t.datetime);
+                    return d.getFullYear() === y && d.getMonth() === m && days.includes(d.getDate());
+                }));
+            });
+            const bestPnl = Math.max(0, ...weekly.map(s => s.pnl));
+            const bestIndex = bestPnl > 0 ? weekly.findIndex(s => s.pnl === bestPnl) : -1;
+            const tooltip = document.createElement('div');
+            tooltip.id = 'weekly-tooltip';
+            tooltip.className = 'weekly-tooltip';
+            tooltip.setAttribute('role', 'tooltip');
+            tooltip.hidden = true;
+            document.body.appendChild(tooltip);
             let wins = 0, losses = 0, totalPnl = 0, tradeDays = 0;
 
             for (let w = 0; w < cells.length / 7; w++) {
@@ -3680,8 +3738,45 @@
 
                     row.appendChild(cell);
                 }
+                const s = weekly[w];
+                const total = document.createElement('div');
+                total.className = 'weekly-total ' + (!s.count ? 'inactive' : s.pnl > 0 ? 'win' : s.pnl < 0 ? 'loss' : 'breakeven') + (w === bestIndex ? ' best' : '');
+                total.tabIndex = 0;
+                const amount = s.count ? (s.pnl === 0 ? '$0.00' : fmtDollar(s.pnl)) : '—';
+                const add = (cls, value) => {
+                    const el = document.createElement('div'); el.className = cls;
+                    el.textContent = value; total.appendChild(el);
+                };
+                add('weekly-pnl', amount);
+                add('weekly-wr', s.wr === '—' ? '— WR' : s.wr + ' WR');
+                add('weekly-count', s.count ? s.count + (s.count === 1 ? ' Trade' : ' Trades') : 'No Trades');
+                if (w === bestIndex) add('weekly-best', 'BEST WEEK');
+                total.setAttribute('aria-label', `Weekly total ${amount}, Win Rate ${s.wr}, Wins ${s.wins}, Losses ${s.losses}, BE ${s.be}`);
+                const show = () => {
+                    tooltip.replaceChildren();
+                    for (const [label, value, color] of [['Win Rate', s.wr, ''], ['Wins', s.wins, '#4ade80'], ['Losses', s.losses, '#f87171'], ['BE', s.be, '#a78bfa']]) {
+                        const line = document.createElement('div');
+                        const key = document.createElement('span'); key.textContent = label;
+                        const val = document.createElement('strong'); val.textContent = value;
+                        if (color) val.style.color = color;
+                        line.append(key, val); tooltip.appendChild(line);
+                    }
+                    tooltip.hidden = false;
+                    const r = total.getBoundingClientRect();
+                    const tr = tooltip.getBoundingClientRect();
+                    tooltip.style.left = Math.max(8, Math.min(r.left + (r.width - tr.width)/2, window.innerWidth - tr.width - 8)) + 'px';
+                    tooltip.style.top = Math.max(8, r.top - tr.height - 8 >= 8 ? r.top - tr.height - 8 : Math.min(r.bottom + 8, window.innerHeight - tr.height - 8)) + 'px';
+                };
+                const hide = () => { tooltip.hidden = true; };
+                total.addEventListener('mouseenter', show);
+                total.addEventListener('mouseleave', hide);
+                total.addEventListener('focus', show);
+                total.addEventListener('blur', hide);
+                total.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+                row.appendChild(total);
                 grid.appendChild(row);
             }
+            grid.closest('.calendar-container').onscroll = () => { tooltip.hidden = true; };
 
             document.getElementById('cal-summary-pnl').textContent = (totalPnl >= 0 ? '+' : '') + '$' + totalPnl;
             document.getElementById('cal-summary-pnl').className = 'summary-value ' + (totalPnl >= 0 ? 'green' : 'red');
