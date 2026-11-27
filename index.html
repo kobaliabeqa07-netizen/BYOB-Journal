@@ -1440,6 +1440,28 @@
         #edge-companions .edge-extra > .grid { grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr)) !important; }
         @container (max-width: 300px) { #edge-companions .rr-layout { grid-template-columns:1fr; } #edge-companions .rr-donut { max-width:170px; margin:auto; } }
         @container (max-width: 280px) { #edge-content .seg-row { grid-template-columns:minmax(0,1fr) minmax(60px,35%); } #edge-content .seg-row .edge-pnl { grid-column:2; } }
+
+        /* Compact confluence analytics; scoped to its existing companion panel. */
+        #edge-conf-content .cf-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:5px 8px; margin-bottom:6px; }
+        #edge-conf-content .cf-header .edge-heading { margin:0; min-width:0; overflow-wrap:anywhere; }
+        #edge-conf-content .cf-tabs { display:inline-flex; flex:0 0 auto; max-width:100%; gap:2px; padding:2px; border:1px solid rgb(var(--line)); border-radius:8px; background:rgb(var(--field)); margin:0; }
+        #edge-conf-content .cf-tab { min-width:0; padding:4px 6px; min-height:22px; border:1px solid transparent; border-radius:5px; color:rgb(var(--s400)); font-size:.65rem; line-height:1.15; font-weight:700; background:transparent; cursor:pointer; white-space:nowrap; transition:background .15s,color .15s,box-shadow .15s; }
+        #edge-conf-content .cf-tab[aria-pressed="true"] { background:rgb(var(--accent) / .22); color:rgb(var(--accent)); border-color:rgb(var(--accent) / .4); box-shadow:0 6px 18px rgb(var(--accent) / .22); }
+        #edge-conf-content .cf-tab:focus-visible { outline:2px solid rgb(var(--accent)); outline-offset:1px; }
+        #edge-conf-content .cf-meta { margin-bottom:6px; }
+        #edge-conf-content .cf-list { display:grid; gap:8px; max-height:340px; overflow:auto; padding:3px 5px 5px 3px; scrollbar-width:thin; }
+        #edge-conf-content .cf-card { min-width:0; display:grid; grid-template-columns:minmax(0,1fr) 82px; align-items:center; gap:6px; padding:9px; border-radius:10px; border:1px solid rgb(var(--line)); background:rgb(var(--field) / .65); }
+        #edge-conf-content .cf-card.is-best { border-color:rgb(var(--amber) / .4); box-shadow:0 0 9px rgb(var(--amber) / .12); }
+        #edge-conf-content .cf-tags,#edge-conf-content .cf-counts,#edge-conf-content .cf-money { display:flex; flex-wrap:wrap; gap:5px; align-items:center; }
+        #edge-conf-content .cf-tag { font-size:.68rem; font-weight:700; padding:2px 6px; border:1px solid; border-radius:6px; overflow-wrap:anywhere; max-width:100%; box-shadow:0 0 8px color-mix(in srgb,currentColor 24%,transparent); }
+        #edge-conf-content .cf-money { margin:7px 0; font-size:.65rem; color:rgb(var(--s400)); }
+        #edge-conf-content .cf-money strong { font-size:.95rem; overflow-wrap:anywhere; }
+        #edge-conf-content .cf-count { font-size:.65rem; font-weight:700; border-radius:5px; padding:3px 6px; background:color-mix(in srgb,currentColor 12%,transparent); box-shadow:0 0 7px color-mix(in srgb,currentColor 20%,transparent); }
+        #edge-conf-content .cf-win { color:rgb(var(--up)); } #edge-conf-content .cf-loss { color:rgb(var(--down)); } #edge-conf-content .cf-be { color:#a78bfa; }
+        #edge-conf-content .cf-gauge { width:100%; overflow:visible; } 
+        #edge-conf-content .cf-more { width:100%; padding:7px; margin-top:5px; color:#818cf8; font-size:.72rem; font-weight:700; cursor:pointer; }
+        #edge-conf-content [hidden] { display:none !important; }
+        @container (max-width:220px) { #edge-conf-content .cf-card { grid-template-columns:minmax(0,1fr) 64px; padding:6px; } }
     </style>
 </head>
 <body>
@@ -4068,49 +4090,44 @@
             }
             const assetSection = `<div class="edge-extra"><h3 class="edge-heading">PERFORMANCE BY ASSET</h3><div class="asset-cards">${assetRows.slice(0,5).map(assetCard).join('') || '<p class="edge-empty">No asset data yet</p>'}</div>${assetRows.length>5?`<details class="asset-more"><summary>View All Assets (${assetRows.length})</summary><div class="asset-cards">${assetRows.slice(5).map(assetCard).join('')}</div></details>`:''}</div>`;
 
-            // ── Confluence Setups: ცალკეული setup-ები და ზუსტი კომბინაციები ──
+            // Compact confluence analytics: preserve individual and exact-set grouping.
             const confTrades = data.filter(t => Array.isArray(t.confluences) && t.confluences.length);
-            let confSection = '';
-            if (confTrades.length) {
-                const single = {};
-                const combo = {};
-                confTrades.forEach(t => {
-                    const uniq = [...new Set(t.confluences)];
-                    uniq.forEach(c => { (single[c] = single[c] || []).push(t); });
-                    if (uniq.length >= 2) {
-                        const sorted = [...uniq].sort((a, b) => a.localeCompare(b));
-                        const key = sorted.join('||');
-                        (combo[key] = combo[key] || { names: sorted, list: [] }).list.push(t);
-                    }
+            const single = new Map(), combo = new Map();
+            confTrades.forEach(t => {
+                const uniq = [...new Set(t.confluences)];
+                uniq.forEach(c => {
+                    if (!single.has(c)) single.set(c,{names:[c],list:[]});
+                    single.get(c).list.push(t);
                 });
-                const sortRows = (a, b) => b.list.length - a.list.length || winRate(b.list) - winRate(a.list);
-                const singleRows = Object.keys(single).map(c => ({ label: confLabel(c), list: single[c] })).sort(sortRows);
-                const comboRows = Object.values(combo)
-                    .map(o => ({ label: o.names.map(c => CONF_ABBREV[c] || c).join(' + '), list: o.list })).sort(sortRows);
-                const MAX_COMBOS = 10;
-
-                let singleHtml = singleRows.map(r => bar(r.label, r.list, { wrap: true })).join('');
-                let comboHtml = comboRows.slice(0, MAX_COMBOS).map(r => bar(r.label, r.list, { wrap: true })).join('');
-                if (comboRows.length > MAX_COMBOS) comboHtml += `<p class="text-[0.6rem] text-slate-600">+ ${comboRows.length - MAX_COMBOS} more</p>`;
-                if (!comboRows.length) comboHtml = '<p class="text-[0.65rem] text-slate-600">No combinations yet (2+ confluences on one trade)</p>';
-
-                confSection = `
-                    <div class="edge-extra">
-                        <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-3">
-                            <h3 class="text-[0.6rem] font-extrabold text-slate-500 tracking-[0.14em] uppercase">Confluence Setups</h3>
-                            <span class="text-[0.6rem] text-slate-600">${confTrades.length} of ${data.length} trades have confluences · pale bar = under 5 trades</span>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10">
-                            <div>
-                                <h4 class="text-[0.55rem] font-bold text-slate-600 tracking-[0.12em] uppercase mb-2">Individual</h4>
-                                ${singleHtml}
-                            </div>
-                            <div>
-                                <h4 class="text-[0.55rem] font-bold text-slate-600 tracking-[0.12em] uppercase mb-2">Combinations</h4>
-                                ${comboHtml}
-                            </div>
-                        </div>
-                    </div>`;
+                if (uniq.length >= 2) {
+                    const sorted = [...uniq].sort((a,b)=>a.localeCompare(b));
+                    const key = JSON.stringify(sorted);
+                    if (!combo.has(key)) combo.set(key,{names:sorted,list:[]});
+                    combo.get(key).list.push(t);
+                }
+            });
+            const confRows = map => [...map.values()].map(r=>({...r,pnl:net(r.list)})).sort((a,b)=>b.pnl-a.pnl || b.list.length-a.list.length);
+            function confCard(r,i) {
+                const w=r.list.filter(t=>effectiveOutcome(t)==='WIN').length;
+                const l=r.list.filter(t=>effectiveOutcome(t)==='LOSS').length;
+                const be=r.list.filter(t=>effectiveOutcome(t)==='BE').length;
+                const rate=w+l?winRate(r.list):null;
+                const best=i===0 && r.pnl>0;
+                const tone=r.pnl>0?'cf-win':r.pnl<0?'cf-loss':'cf-be';
+                const tags=r.names.map(c=>`<span class="cf-tag" title="${escAttr(confLabel(c))}" style="${colorStyle('confluences',c)}">${escAttr(confLabel(c))}</span>`).join('');
+                const tip=`${r.list.length} trades · ${w} wins · ${l} losses · ${be} BE${r.list.length<5?' · Small sample':''}`;
+                return `<article class="cf-card ${best?'is-best':''}" title="${escAttr(tip)}"><div style="min-width:0"><div class="cf-tags">${tags}${best?'<span class="edge-best">BEST</span>':''}</div><div class="cf-money"><strong class="${tone}">${assetMoney(r.pnl)}</strong><span>${r.list.length} Trades</span></div><div class="cf-counts"><span class="cf-count cf-win" title="Wins">W ${w}</span><span class="cf-count cf-loss" title="Losses">L ${l}</span><span class="cf-count cf-be" title="Break Even">BE ${be}</span></div></div><svg class="cf-gauge" viewBox="0 0 100 76" role="img" aria-label="Win Rate ${rate===null?'not applicable':rate.toFixed(1)+'%'}"><path d="M10 56 A40 40 0 0 1 90 56" fill="none" stroke="rgb(var(--s800))" stroke-width="7" stroke-linecap="round"/>${rate>0?`<path d="M10 56 A40 40 0 0 1 90 56" pathLength="100" fill="none" stroke="rgb(var(--up))" stroke-width="7" stroke-linecap="round" stroke-dasharray="${rate} 100" style="filter:drop-shadow(0 0 3px rgb(var(--up) / .5))"/>`:''}<text x="50" y="48" text-anchor="middle" font-size="19" font-weight="800" fill="${rate===null?'rgb(var(--s400))':rate>=50?'rgb(var(--up))':'rgb(var(--down))'}">${rate===null?'—':rate.toFixed(1)+'%'}</text><text x="50" y="65" text-anchor="middle" font-size="8" fill="rgb(var(--s400))">WIN RATE</text></svg></article>`;
+            }
+            const confRoot=document.getElementById('edge-conf-content');
+            const confMode=confRoot.dataset.mode==='combo'?'combo':'single';
+            const confSection=`<div class="edge-extra"><div class="cf-header"><h3 class="edge-heading">CONFLUENCE SETUPS</h3><div class="cf-tabs" role="group" aria-label="Confluence view"><button type="button" class="cf-tab" data-cf-mode="single" aria-pressed="${confMode==='single'}">Individual</button><button type="button" class="cf-tab" data-cf-mode="combo" aria-pressed="${confMode==='combo'}">Combinations</button></div></div><div class="cf-meta text-[0.65rem] text-slate-500">${confTrades.length} of ${data.length} trades have confluences</div><div class="cf-results"></div></div>`;
+            function renderConf(mode,expanded=false) {
+                confRoot.dataset.mode=mode;
+                confRoot.querySelectorAll('.cf-tab').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.cfMode===mode)));
+                const rows=confRows(mode==='combo'?combo:single);
+                const target=confRoot.querySelector('.cf-results');
+                target.innerHTML=`<div class="cf-list">${rows.slice(0,expanded?rows.length:3).map(confCard).join('') || '<p class="edge-empty">'+(mode==='combo'?'No combinations yet (2+ confluences on one trade)':'No confluence data yet')+'</p>'}</div>${rows.length>3?`<button type="button" class="cf-more" aria-expanded="${expanded}">${expanded?'Show Less':`View All (${rows.length})`}</button>`:''}`;
+                target.querySelector('.cf-more')?.addEventListener('click',()=>renderConf(mode,!expanded));
             }
 
             // Realized R distribution, using the existing signed PnL and risk convention.
@@ -4153,7 +4170,9 @@
             </div>`;
             box.innerHTML = `${col1}${col2}${col3}${assetSection}`;
             document.getElementById('edge-risk-content').innerHTML = riskSection;
-            document.getElementById('edge-conf-content').innerHTML = confSection || '<div class="edge-extra"><h3 class="edge-heading">CONFLUENCE SETUPS</h3><p class="edge-empty">No confluence data yet</p></div>';
+            confRoot.innerHTML = confSection;
+            confRoot.querySelectorAll('.cf-tab').forEach(btn=>btn.addEventListener('click',()=>renderConf(btn.dataset.cfMode)));
+            renderConf(confMode);
         }
 
         /* ══════════════════════════════════════════════════════
