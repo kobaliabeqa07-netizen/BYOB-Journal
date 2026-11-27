@@ -1182,6 +1182,54 @@
         .workspace-view-tab[aria-selected="true"]:hover { background: rgb(var(--accent-hover)); box-shadow: 0 8px 22px rgb(var(--accent) / 0.35); }
         .workspace-view-tab[aria-selected="true"]:active { background: rgb(var(--accent-active)); transform: translateY(1px); }
         .workspace-view-tab:focus-visible { outline: 2px solid rgb(var(--accent)); outline-offset: 2px; }
+        /* Soft Outline — standard workspace tabs only; News retains Purple Glow. */
+        .workspace-view-tab:not(.workspace-view-tab--news) {
+            border: 1px solid transparent;
+            transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .1s ease, color .2s ease;
+        }
+        .workspace-view-tab:not(.workspace-view-tab--news)[aria-selected="false"] {
+            background: rgb(var(--f700));
+            border-color: rgb(var(--s700) / .8);
+            color: rgb(var(--s300));
+        }
+        .workspace-view-tab:not(.workspace-view-tab--news)[aria-selected="false"]:hover {
+            background: rgb(var(--f600));
+            border-color: rgb(var(--accent) / .55);
+            color: rgb(var(--white));
+            box-shadow: 0 0 14px rgb(var(--accent) / .09);
+        }
+        .workspace-view-tab:not(.workspace-view-tab--news)[aria-selected="true"] {
+            border-color: rgb(var(--accent));
+        }
+        .workspace-view-tab:not(.workspace-view-tab--news) svg { flex-shrink: 0; }
+        .workspace-view-tab--news {
+            position: relative;
+            color: #d8ccff;
+            background: linear-gradient(135deg, rgba(92, 51, 163, 0.18) 0%, rgba(131, 87, 209, 0.12) 100%), rgb(var(--field));
+            border: 1px solid rgba(167, 139, 250, 0.28);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 1px rgba(120, 68, 200, 0.05);
+        }
+        .workspace-view-tab--news svg { opacity: 0.92; }
+        .workspace-view-tab--news:hover {
+            color: #f3efff;
+            border-color: rgba(196, 181, 253, 0.45);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.16), 0 0 18px rgba(167, 139, 250, 0.08);
+        }
+        .workspace-view-tab--news[aria-selected="true"] {
+            color: #ffffff;
+            background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 48%, #a78bfa 100%);
+            border-color: rgba(196, 181, 253, 0.72);
+            box-shadow: 0 12px 28px rgba(124, 58, 237, 0.34), 0 0 0 1px rgba(196, 181, 253, 0.18), 0 0 20px rgba(167, 139, 250, 0.22);
+        }
+        .workspace-view-tab--news[aria-selected="true"]:hover {
+            background: linear-gradient(135deg, #8b5cf6 0%, #9f7aea 48%, #c4b5fd 100%);
+            box-shadow: 0 14px 30px rgba(124, 58, 237, 0.4), 0 0 0 1px rgba(221, 214, 254, 0.25), 0 0 26px rgba(167, 139, 250, 0.28);
+        }
+        .workspace-view-tab--news[aria-selected="true"]:active {
+            background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%);
+            transform: translateY(1px);
+        }
+        .workspace-view-tab--news:focus-visible { outline-color: #a78bfa; }
         #workspace-overview-panel[hidden], #workspace-log-panel[hidden] { display: none !important; }
         .new-trade-btn {
             display: inline-flex; align-items: center; gap: 0.5rem;
@@ -1548,6 +1596,43 @@
         .gallery-detail { min-width:0; overflow-wrap:anywhere; display:flex; flex-direction:column; gap:12px; }
         .gallery-detail p { white-space:pre-wrap; font-size:.8rem; }
         @media(max-width:800px) { .gallery-dialog-body { grid-template-columns:1fr; } }
+        /* Economic Calendar — independent workspace view */
+        #workspace-news-panel[hidden], #news-currencies[hidden], #news-next[hidden], #news-toast[hidden] {display:none!important;}
+        .news-shell{max-width:1320px;margin:0 auto;padding:8px 2px 24px;display:grid;gap:16px;color:rgb(var(--s300));font-size:13px;}
+        .news-head,.news-toolbar,.news-footer,.news-next-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+        .news-head h2{font-size:22px;font-weight:800;color:rgb(var(--white));line-height:1.2;}
+        .news-muted{font-size:12px;color:rgb(var(--s400));}
+        .news-spacer{flex:1;}
+        .news-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:rgb(var(--field));border:1px solid rgb(var(--line)/.8);border-radius:8px;padding:7px 11px;color:rgb(var(--s300));font-size:12px;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s;}
+        .news-btn:hover,.news-btn:focus-visible{border-color:rgb(var(--accent)/.7);outline:none;}
+        .news-btn[aria-pressed="true"]{color:rgb(var(--accent));border-color:rgb(var(--accent)/.5);background:rgb(var(--accent)/.11);box-shadow:0 0 10px rgb(var(--accent)/.08);}
+        .news-btn:disabled{opacity:.55;cursor:wait;}
+        .news-impact{--ic:var(--s400);color:rgb(var(--ic));}
+        .news-impact[data-impact="High"],.news-high{--ic:248 113 113;}
+        .news-impact[data-impact="Medium"]{--ic:251 146 60;}
+        .news-impact[data-impact="Low"]{--ic:250 204 21;}
+        .news-impact[aria-pressed="true"]{color:rgb(var(--ic));border-color:rgb(var(--ic)/.48);background:rgb(var(--ic)/.1);box-shadow:none;}
+        .news-dot{display:inline-block;width:7px;height:7px;flex:none;border-radius:2px;background:rgb(var(--ic));box-shadow:0 0 7px rgb(var(--ic)/.35);}
+        .news-next{background:linear-gradient(110deg,rgb(248 113 113/.09),rgb(var(--card)));border:1px solid rgb(248 113 113/.28);border-radius:12px;padding:16px 18px;display:grid;gap:8px;}
+        .news-next h3{font-size:11px;font-weight:800;letter-spacing:.08em;color:#f87171;}
+        #news-next-title{font-size:19px;font-weight:700;color:rgb(var(--white));}
+        #news-countdown{font-family:'JetBrains Mono',monospace;font-size:23px;color:#f87171;font-weight:700;font-variant-numeric:tabular-nums;}
+        .news-currency-wrap{position:relative;}
+        #news-currencies{position:absolute;right:0;top:calc(100% + 6px);z-index:35;min-width:230px;background:rgb(var(--menu));border:1px solid rgb(var(--line));border-radius:10px;padding:12px;box-shadow:0 12px 32px #0007;display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+        #news-currencies label{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;}
+        .news-table-wrap{border:1px solid rgb(var(--line)/.65);border-radius:12px;background:rgb(var(--card));overflow:auto;}
+        .news-table{width:100%;border-collapse:collapse;min-width:570px;text-align:left;}
+        .news-table th{font-size:12px;color:rgb(var(--s400));text-transform:uppercase;letter-spacing:.07em;font-weight:700;background:rgb(var(--field));padding:12px 15px;}
+        .news-table td{padding:12px 15px;border-top:1px solid rgb(var(--line)/.4);font-size:15px;}
+        .news-table .news-date td{background:rgb(var(--field)/.65);color:rgb(var(--s300));font-weight:700;font-size:14px;letter-spacing:.05em;}
+        .news-table .news-event{color:rgb(var(--ic));font-weight:600;border-left:3px solid rgb(var(--ic));}
+        .news-table .news-time{white-space:nowrap;font-variant-numeric:tabular-nums;color:rgb(var(--s400));}
+        .news-table .news-past{opacity:.65;}
+        .news-status{color:rgb(var(--s400));font-size:12px;line-height:1.5;}
+        .news-status.warn{color:rgb(var(--amber));}
+        .news-empty{padding:36px 14px;text-align:center;color:rgb(var(--s400));}
+        .news-toast{position:fixed;z-index:100;right:20px;bottom:20px;max-width:min(400px,90vw);background:rgb(var(--card));border:1px solid #f8717166;border-radius:12px;padding:14px 16px;box-shadow:0 10px 35px #0008;color:rgb(var(--s200));font-size:13px;}
+        .news-toast strong{display:block;color:#f87171;margin-bottom:5px;}
     </style>
 </head>
 <body>
@@ -1688,9 +1773,10 @@
             <!-- Workspace sub-navigation and New trade -->
             <div class="flex items-center justify-between gap-2 mb-4 fade-up">
                 <div class="workspace-view-tabs no-drag" role="tablist" aria-label="Workspace views">
-                    <button type="button" id="workspace-overview-tab" class="workspace-view-tab" role="tab" aria-selected="true" aria-controls="workspace-overview-panel">Overview</button>
-                    <button type="button" id="workspace-log-tab" class="workspace-view-tab" role="tab" aria-selected="false" aria-controls="workspace-log-panel" tabindex="-1">Log</button>
+                    <button type="button" id="workspace-overview-tab" class="workspace-view-tab" role="tab" aria-selected="true" aria-controls="workspace-overview-panel"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.3"/><rect x="14" y="3" width="7" height="5" rx="1.3"/><rect x="14" y="12" width="7" height="9" rx="1.3"/><rect x="3" y="16" width="7" height="5" rx="1.3"/></svg>Overview</button>
+                    <button type="button" id="workspace-log-tab" class="workspace-view-tab" role="tab" aria-selected="false" aria-controls="workspace-log-panel" tabindex="-1"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M3 6h1M3 12h1M3 18h1"/></svg>Log</button>
                     <button type="button" id="workspace-gallery-tab" class="workspace-view-tab" role="tab" aria-selected="false" aria-controls="workspace-gallery-panel" tabindex="-1"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-5 5 6"/></svg>Gallery</button>
+                    <button type="button" id="workspace-news-tab" class="workspace-view-tab workspace-view-tab--news" role="tab" aria-selected="false" aria-controls="workspace-news-panel" tabindex="-1"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6.5a2.5 2.5 0 0 1 2.5-2.5H19v13.5A2.5 2.5 0 0 1 16.5 20H7.5A2.5 2.5 0 0 1 5 17.5z"/><path d="M8 8h8M8 11.5h8M8 15h5"/><path d="M19 4v13.5A2.5 2.5 0 0 1 16.5 20"/></svg>News</button>
                 </div>
                 <button type="button" id="new-trade-btn" class="new-trade-btn no-drag">
                     <span class="new-trade-plus">+</span> New trade
@@ -1896,6 +1982,25 @@
                     <div id="gallery-pagination" class="gallery-pagination" hidden><button type="button" id="gallery-prev" class="gallery-btn">‹ Previous</button><span id="gallery-page" class="gallery-muted"></span><button type="button" id="gallery-next" class="gallery-btn">Next ›</button></div>
                 </div>
             </section>
+            <section id="workspace-news-panel" role="tabpanel" aria-labelledby="workspace-news-tab" hidden>
+                <div class="news-shell">
+                    <header class="news-head"><div><h2>Economic Calendar</h2><p class="news-muted">Stay ahead of market-moving events</p></div><div class="news-spacer"></div><button class="news-btn" id="news-refresh" type="button" title="Refresh weekly calendar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7v5h-5M4 17v-5h5M5 9a8 8 0 0 1 13-4l2 3M4 16l2 3a8 8 0 0 0 13-4"/></svg>Refresh</button></header>
+                    <div class="news-toolbar" role="group" aria-label="Calendar period">
+                        <button type="button" class="news-btn" data-news-period="today" aria-pressed="true">Today</button><button type="button" class="news-btn" data-news-period="tomorrow" aria-pressed="false">Tomorrow</button><button type="button" class="news-btn" data-news-period="week" aria-pressed="false">This Week</button>
+                        <div class="news-spacer"></div><button type="button" class="news-btn" id="news-zone" title="Switch time zone">New York Time</button>
+                    </div>
+                    <div class="news-next" id="news-next" hidden><h3>● NEXT HIGH IMPACT EVENT</h3><div class="news-next-row"><div><div id="news-next-title"></div><div class="news-muted" id="news-next-meta"></div></div><div class="news-spacer"></div><div id="news-countdown"></div></div></div>
+                    <div class="news-toolbar" aria-label="Expected impact and currencies">
+                        <button type="button" class="news-btn news-impact" data-impact="High" aria-pressed="true"><span class="news-dot"></span>High Impact</button><button type="button" class="news-btn news-impact" data-impact="Medium" aria-pressed="true"><span class="news-dot"></span>Medium</button><button type="button" class="news-btn news-impact" data-impact="Low" aria-pressed="true"><span class="news-dot"></span>Low</button><button type="button" class="news-btn news-impact" data-impact="Holiday" aria-pressed="true"><span class="news-dot"></span>Holiday</button>
+                        <div class="news-spacer"></div><div class="news-currency-wrap"><button type="button" class="news-btn" id="news-currency-toggle" aria-expanded="false" aria-controls="news-currencies">USD ▾</button><div id="news-currencies" hidden></div></div>
+                        <button type="button" class="news-btn" id="news-alert" aria-pressed="false" title="Toggle in-app high impact alerts">Alerts off</button><button type="button" class="news-btn" id="news-alert-lead" title="Change alert lead time">5 min</button>
+                    </div>
+                    <div class="news-status" id="news-status" role="status">Loading calendar…</div>
+                    <div class="news-table-wrap"><table class="news-table"><thead><tr><th>Time</th><th>CCY</th><th>Event</th><th>Forecast</th><th>Previous</th></tr></thead><tbody id="news-rows"></tbody></table><div class="news-empty" id="news-empty" hidden></div></div>
+                    <footer class="news-footer"><span class="news-muted">Source: Forex Factory · Weekly export · Times may change</span><div class="news-spacer"></div><span class="news-muted" id="news-updated">Not updated yet</span></footer>
+                </div>
+            </section>
+            <div id="news-toast" class="news-toast" role="status" hidden><strong>High impact news alert</strong><span id="news-toast-text"></span> <button type="button" class="news-btn" id="news-toast-close" aria-label="Dismiss alert">×</button></div>
             <dialog id="gallery-dialog" aria-labelledby="gallery-dialog-title">
                 <div class="gallery-dialog-head"><h2 id="gallery-dialog-title">Trade details</h2><button type="button" class="gallery-btn" id="gallery-zoom-out" aria-label="Zoom out">−</button><button type="button" class="gallery-btn" id="gallery-zoom-in" aria-label="Zoom in">+</button><button type="button" class="gallery-btn" id="gallery-fullscreen">Full Screen</button><button type="button" class="gallery-btn" id="gallery-edit">Edit Trade</button><button type="button" class="gallery-btn" id="gallery-close">Close ✕</button></div>
                 <div class="gallery-dialog-body"><div class="gallery-preview-stage"><p id="gallery-preview-status" class="gallery-empty">Loading image…</p><img id="gallery-original" alt="Original trade screenshot" hidden></div><div id="gallery-detail" class="gallery-detail"></div></div>
@@ -5099,6 +5204,73 @@
             galleryEl('edit').onclick=()=>{const id=galleryTradeId;galleryClose();if(id) editTrade(id);};
         }
         galleryBind();
+        /* Economic Calendar: local filtering, timezone conversion and alerts. */
+        const newsEl = id => document.getElementById('news-'+id);
+        const newsZones=['America/New_York','Asia/Tbilisi'];
+        const newsAllCurrencies=['USD','EUR','GBP','AUD','CAD','CHF','JPY','NZD','CNY'];
+        const newsImpacts=['High','Medium','Low','Holiday'];
+        const newsLeads=[5,10,15,30];
+        let newsPrefs={currencies:['USD'],impacts:[...newsImpacts],zone:newsZones[0],alerts:false,lead:5};
+        try{const p=JSON.parse(localStorage.getItem('byob_news_prefs')||'null');if(p){newsPrefs={currencies:Array.isArray(p.currencies)?p.currencies.filter(x=>newsAllCurrencies.includes(x)):['USD'],impacts:Array.isArray(p.impacts)?p.impacts.filter(x=>newsImpacts.includes(x)):[...newsImpacts],zone:newsZones.includes(p.zone)?p.zone:newsZones[0],alerts:p.alerts===true,lead:newsLeads.includes(p.lead)?p.lead:5};}}catch(_){}
+        let newsPeriod='today', newsData={events:[],fetchedAt:null,error:''}, newsBusy=false, newsAttemptDay='', newsLastRenderDay='', newsAlerted=new Set(), newsToastTimer;
+        const newsDateKey=(ms,zone=newsPrefs.zone)=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(ms);return ['year','month','day'].map(k=>p.find(x=>x.type===k).value).join('-');};
+        const newsAddDays=(key,n)=>{const d=new Date(key+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);};
+        const newsTime=ms=>new Intl.DateTimeFormat('en-US',{timeZone:newsPrefs.zone,hour:'2-digit',minute:'2-digit',hour12:false,hourCycle:'h23'}).format(ms);
+        const newsWeekStart=ms=>{const k=newsDateKey(ms,newsZones[0]);return newsAddDays(k,-new Date(k+'T00:00:00Z').getUTCDay());};
+        const newsFresh=()=>!!newsData.fetchedAt && newsDateKey(newsData.fetchedAt,newsZones[0])===newsDateKey(Date.now(),newsZones[0]);
+        const newsSelected=e=>newsPrefs.currencies.includes(e.country)&&newsPrefs.impacts.includes(e.impact);
+        const newsEventKey=e=>[e.country,e.date,e.title].join('|');
+        function newsSave(){try{localStorage.setItem('byob_news_prefs',JSON.stringify(newsPrefs));}catch(_){} newsRender();}
+        function newsSyncControls(){
+            document.querySelectorAll('[data-news-period]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.newsPeriod===newsPeriod)));
+            document.querySelectorAll('#workspace-news-panel [data-impact]').forEach(b=>{if(b.tagName==='BUTTON')b.setAttribute('aria-pressed',String(newsPrefs.impacts.includes(b.dataset.impact)));});
+            newsEl('zone').textContent=newsPrefs.zone===newsZones[0]?'New York Time':'Georgia Time';
+            newsEl('currency-toggle').textContent=(newsPrefs.currencies.length===1?newsPrefs.currencies[0]:newsPrefs.currencies.length===0?'No currencies':newsPrefs.currencies.length+' currencies')+' ▾';
+            newsEl('currencies').querySelectorAll('input').forEach(i=>i.checked=newsPrefs.currencies.includes(i.value));
+            newsEl('alert').textContent=newsPrefs.alerts?'Alerts on':'Alerts off';newsEl('alert').setAttribute('aria-pressed',String(newsPrefs.alerts));newsEl('alert-lead').textContent=newsPrefs.lead+' min';
+        }
+        function newsRender(){
+            newsSyncControls();
+            const now=Date.now(),today=newsDateKey(now),tomorrow=newsAddDays(today,1),weekStart=newsWeekStart(now),weekEnd=newsAddDays(weekStart,6);
+            const cacheWeek=newsData.fetchedAt?newsWeekStart(newsData.fetchedAt):null;
+            const currentWeek=cacheWeek===weekStart;
+            const rows=newsData.events.filter(newsSelected).filter(e=>newsPeriod==='week'||newsDateKey(Date.parse(e.date))===(newsPeriod==='today'?today:tomorrow));
+            const body=newsEl('rows');body.replaceChildren();let last='';
+            for(const e of rows){const ms=Date.parse(e.date),key=newsDateKey(ms);if(key!==last){const tr=body.insertRow();tr.className='news-date';const td=tr.insertCell();td.colSpan=5;td.textContent=new Intl.DateTimeFormat('en-US',{weekday:'long',month:'short',day:'numeric',timeZone:newsPrefs.zone}).format(ms);last=key;}
+                const tr=body.insertRow();tr.className='news-impact'+(ms<now?' news-past':'');tr.dataset.impact=e.impact;
+                [e.impact==='Holiday'?'All day':newsTime(ms),e.country,e.title,e.forecast||'—',e.previous||'—'].forEach((v,i)=>{const td=tr.insertCell();td.textContent=v;if(i===0)td.className='news-time';if(i===2){td.className='news-event';td.title=e.impact+' impact';}});
+            }
+            newsEl('empty').hidden=rows.length>0;newsEl('empty').textContent=newsBusy?'Loading calendar…':!newsData.fetchedAt?'Calendar unavailable. Try Refresh.':!currentWeek?'Current week not available. Refresh to update.':newsPeriod==='tomorrow'&&newsDateKey(now,newsZones[0])===weekEnd?'Tomorrow may fall outside the weekly export. Check the source.':'No matching events in the downloaded calendar.';
+            const status=newsEl('status');status.classList.toggle('warn',!!newsData.error||!newsFresh()||!!newsData.cooldown);
+            status.textContent=newsBusy?'Updating weekly calendar…':newsData.cooldown?'Please wait at least 60 seconds between refreshes.':newsData.error?'Source update issue: '+newsData.error+(newsData.fetchedAt?' · Showing saved calendar.':''):!newsData.fetchedAt?'No calendar loaded.':!newsFresh()?'Showing cached calendar. Times may be outdated.':'Weekly export · '+cacheWeek+' – '+newsAddDays(cacheWeek,6)+' (New York)';
+            newsEl('updated').textContent=newsData.fetchedAt?'Last updated: '+new Intl.DateTimeFormat('en-US',{timeZone:newsPrefs.zone,month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(newsData.fetchedAt):'Not updated yet';
+            newsLastRenderDay=today;newsTick();
+        }
+        async function newsRefresh(force=false){
+            if(newsBusy)return;
+            newsAttemptDay=newsDateKey(Date.now(),newsZones[0]);newsBusy=true;newsEl('refresh').disabled=true;newsEl('status').textContent='Updating weekly calendar…';
+            try{if(!window.byobNews)throw new Error('Calendar requires the desktop app.');const r=await window.byobNews.calendar(force);if(!r||!Array.isArray(r.events))throw new Error('Invalid calendar response.');newsData=r;}catch(e){newsData={...newsData,error:String(e.message||e),cooldown:false};}finally{newsBusy=false;newsEl('refresh').disabled=false;newsRender();}
+        }
+        function newsTick(){
+            const now=Date.now();const fresh=newsFresh();const future=newsData.events.filter(e=>e.impact==='High'&&newsSelected(e)&&Date.parse(e.date)>now);
+            const e=future[0];newsEl('next').hidden=!e||!fresh;
+            if(e&&fresh){const ms=Date.parse(e.date);newsEl('next-title').textContent=e.title;newsEl('next-meta').textContent=e.country+' · '+newsDateKey(ms)+' · '+newsTime(ms);const s=Math.ceil((ms-now)/1000);newsEl('countdown').textContent=[Math.floor(s/3600),Math.floor(s/60)%60,s%60].map(x=>String(x).padStart(2,'0')).join(':');}
+            if(fresh&&newsPrefs.alerts){const due=future.filter(e=>Date.parse(e.date)-now<=newsPrefs.lead*60000&&!newsAlerted.has(newsEventKey(e)));if(due.length){due.forEach(e=>newsAlerted.add(newsEventKey(e)));newsEl('toast-text').textContent=due.map(e=>e.country+' · '+e.title+' · '+newsTime(Date.parse(e.date))).join(' / ');newsEl('toast').hidden=false;clearTimeout(newsToastTimer);newsToastTimer=setTimeout(()=>newsEl('toast').hidden=true,20000);}}
+        }
+        function newsBind(){
+            for(const c of newsAllCurrencies){const label=document.createElement('label'),i=document.createElement('input');i.type='checkbox';i.value=c;i.addEventListener('change',()=>{newsPrefs.currencies=i.checked?[...new Set([...newsPrefs.currencies,c])]:newsPrefs.currencies.filter(x=>x!==c);newsSave();});label.append(i,document.createTextNode(c));newsEl('currencies').append(label);}
+            document.querySelectorAll('[data-news-period]').forEach(b=>b.addEventListener('click',()=>{newsPeriod=b.dataset.newsPeriod;newsRender();}));
+            document.querySelectorAll('#workspace-news-panel button[data-impact]').forEach(b=>b.addEventListener('click',()=>{const x=b.dataset.impact;newsPrefs.impacts=newsPrefs.impacts.includes(x)?newsPrefs.impacts.filter(i=>i!==x):[...newsPrefs.impacts,x];newsSave();}));
+            const closeCurrencies=()=>{newsEl('currencies').hidden=true;newsEl('currency-toggle').setAttribute('aria-expanded','false');};
+            newsEl('currency-toggle').onclick=()=>{const hidden=newsEl('currencies').hidden;newsEl('currencies').hidden=!hidden;newsEl('currency-toggle').setAttribute('aria-expanded',String(hidden));};
+            document.addEventListener('click',e=>{if(!e.target.closest('.news-currency-wrap'))closeCurrencies();});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCurrencies();});
+            newsEl('zone').onclick=()=>{newsPrefs.zone=newsPrefs.zone===newsZones[0]?newsZones[1]:newsZones[0];newsSave();};newsEl('alert').onclick=()=>{newsPrefs.alerts=!newsPrefs.alerts;if(!newsPrefs.alerts)newsEl('toast').hidden=true;newsSave();};newsEl('alert-lead').onclick=()=>{newsPrefs.lead=newsLeads[(newsLeads.indexOf(newsPrefs.lead)+1)%newsLeads.length];newsSave();};newsEl('toast-close').onclick=()=>newsEl('toast').hidden=true;newsEl('refresh').onclick=()=>newsRefresh(true);
+            newsSyncControls();newsRefresh();
+            setInterval(()=>{if(newsAttemptDay!==newsDateKey(Date.now(),newsZones[0]))newsRefresh();if(newsLastRenderDay!==newsDateKey(Date.now()))newsRender();},60000);
+            setInterval(newsTick,1000);
+        }
+        newsBind();
+
 
         function updateUI() {
             renderTopStats();
@@ -5113,7 +5285,7 @@
 
         /* Workspace views: keep the same DOM, trade data and event bindings. */
         function setWorkspaceView(view) {
-            const views = ['overview','log','gallery'];
+            const views = ['overview','log','gallery','news'];
             if (!views.includes(view)) return;
             views.forEach(name => {
                 const active = name === view;
@@ -5126,6 +5298,7 @@
                 document.getElementById('log-section').open = true;
                 renderLog();
             } else if (view === 'gallery') renderGallery();
+            else if (view === 'news') newsRender();
             else {
                 requestAnimationFrame(() => {
                     if (!document.getElementById('workspace-overview-panel').hidden && !document.getElementById('dashboard-container').classList.contains('hidden') && timelineChart) {
@@ -5135,7 +5308,7 @@
             }
         }
         window._setWorkspaceView = setWorkspaceView;
-        ['overview', 'log', 'gallery'].forEach((view, i, views) => {
+        ['overview', 'log', 'gallery', 'news'].forEach((view, i, views) => {
             const tab = document.getElementById('workspace-' + view + '-tab');
             tab.addEventListener('click', () => setWorkspaceView(view));
             tab.addEventListener('keydown', event => {

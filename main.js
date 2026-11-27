@@ -324,6 +324,55 @@ ipcMain.handle('workspace:delete-attachment', async (_event, attachment) => {
     return { ok: true };
 });
 
+// Economic Calendar — fixed official weekly export, local cache, no renderer URLs.
+const https = require('https');
+const NEWS_ENDPOINT = 'https://nfs.faireconomy.media/ff_calendar_thisweek.json';
+const newsDay = (ms = Date.now()) => new Intl.DateTimeFormat('en-CA', {timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(ms);
+let newsCache = null, newsLoaded = false, newsPending = null, newsLastAttempt = 0, newsError = '';
+function newsFile() { return path.join(app.getPath('userData'), 'economic-calendar-cache.json'); }
+function normalizeNews(rows) {
+    if (!Array.isArray(rows) || rows.length > 10000) throw new Error('Unexpected calendar format');
+    const clean = rows.filter(r => r && typeof r.title === 'string' && typeof r.country === 'string' && /^[A-Z]{3}$/.test(r.country) && typeof r.date === 'string' && /(?:Z|[+-]\d{2}:\d{2})$/.test(r.date) && Number.isFinite(Date.parse(r.date)) && ['High','Medium','Low','Holiday'].includes(r.impact)).map(r => ({title:r.title.slice(0,300),country:r.country,date:new Date(r.date).toISOString(),impact:r.impact,forecast:String(r.forecast ?? '').slice(0,80),previous:String(r.previous ?? '').slice(0,80)}));
+    if (rows.length && !clean.length) throw new Error('No valid calendar events');
+    return clean.sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));
+}
+function requestNews() {
+    return new Promise((resolve,reject)=>{
+        const req=https.get(NEWS_ENDPOINT,{headers:{Accept:'application/json'}},res=>{
+            if(res.statusCode!==200){res.resume(); reject(new Error('Calendar source HTTP '+res.statusCode));return;}
+            let size=0; const chunks=[];
+            res.on('data',chunk=>{size+=chunk.length;if(size>2*1024*1024){req.destroy(new Error('Calendar response too large'));return;}chunks.push(chunk);});
+            res.on('error',reject);res.on('aborted',()=>reject(new Error('Calendar response interrupted')));
+            res.on('end',()=>{try{resolve(normalizeNews(JSON.parse(Buffer.concat(chunks).toString('utf8'))));}catch(e){reject(e);}});
+        });
+        const timer=setTimeout(()=>req.destroy(new Error('Calendar request timed out')),12000);
+        req.on('close',()=>clearTimeout(timer));req.on('error',reject);
+    });
+}
+async function readNews(force) {
+    if(newsPending) return newsPending;
+    newsPending=(async()=>{
+        if(!newsLoaded){newsLoaded=true;try{const saved=JSON.parse(await fs.readFile(newsFile(),'utf8'));if(Number.isFinite(saved.fetchedAt)&&saved.fetchedAt<=Date.now()){newsCache={fetchedAt:saved.fetchedAt,events:normalizeNews(saved.events)};}}catch(_){} }
+        const now=Date.now();
+        const needed=(!newsCache||newsDay(newsCache.fetchedAt)!==newsDay(now))&&(!newsLastAttempt||newsDay(newsLastAttempt)!==newsDay(now));
+        let cooldown=false;
+        if((force||needed)&&(!newsLastAttempt||now-newsLastAttempt>=60000)){
+            newsLastAttempt=now;
+            try{
+                const events=await requestNews();
+                newsCache={fetchedAt:Date.now(),events};newsError='';
+                try{const file=newsFile();await fs.writeFile(file+'.tmp',JSON.stringify(newsCache),'utf8');await fs.rename(file+'.tmp',file);}catch(e){newsError='Calendar loaded, but offline cache could not be saved.';}
+            }catch(e){newsError=String(e.message||'Calendar unavailable').slice(0,200);}
+        }else if(force){cooldown=true;}
+        return {events:newsCache?.events||[],fetchedAt:newsCache?.fetchedAt||null,error:newsError,cooldown};
+    })();
+    try{return await newsPending;}finally{newsPending=null;}
+}
+ipcMain.handle('news:calendar', (event, force) => {
+    if(!mainWindow || event.sender!==mainWindow.webContents) throw new Error('Unauthorized calendar request');
+    return readNews(force===true);
+});
+
 // Window buttons (minimize / maximize / close) follow the app theme
 const WINDOW_THEMES = {
     navy:   { background: '#0F1117', overlay: '#131723', symbol: '#A8AFC0' },

@@ -42,6 +42,8 @@ contextBridge.exposeInMainWorld('byobWorkspace', {
     deleteAttachment: (attachment) => ipcRenderer.invoke('workspace:delete-attachment', attachment)
 });
 
+contextBridge.exposeInMainWorld('byobNews', { calendar: (force=false) => ipcRenderer.invoke('news:calendar', force===true) });
+
 contextBridge.exposeInMainWorld('byobTheme', {
     set: (name) => ipcRenderer.send('theme:set', name)
 });
