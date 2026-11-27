@@ -1396,6 +1396,28 @@
         #edge-content .rr-details summary { cursor:pointer; text-align:center; color:#818cf8; font-size:.72rem; font-weight:700; }
         #edge-content .rr-all { max-height:240px; overflow:auto; margin-top:8px; }
         @container (max-width: 300px) { #edge-content .rr-layout { grid-template-columns:1fr; } #edge-content .rr-donut { max-width:170px; margin:auto; } }
+
+        /* Asset performance cards, contained within the existing Edge column. */
+        #edge-content .asset-cards { display:grid; gap:10px; }
+        #edge-content .asset-card { min-width:0; padding:12px; border:1px solid rgb(var(--line)); border-radius:12px; background:rgb(var(--field) / .65); }
+        #edge-content .asset-card.is-best { border-color:rgb(var(--amber) / .35); box-shadow:0 0 12px rgb(var(--amber) / .09); }
+        #edge-content .asset-top { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+        #edge-content .asset-name { font-size:.9rem; font-weight:800; color:rgb(var(--s200)); overflow-wrap:anywhere; min-width:0; }
+        #edge-content .asset-pnl { font-size:1rem; font-weight:800; margin-left:auto; }
+        #edge-content .asset-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:12px 0; }
+        #edge-content .asset-metrics small { display:block; color:rgb(var(--s400)); font-size:.65rem; }
+        #edge-content .asset-metrics strong { display:block; font-size:.9rem; font-weight:700; overflow-wrap:anywhere; }
+        #edge-content .asset-strip { display:flex; gap:4px; height:9px; margin-bottom:9px; }
+        #edge-content .asset-segment { min-width:0; border-radius:4px; background:rgb(var(--asset-tone)); box-shadow:0 0 8px rgb(var(--asset-tone) / .3); transition:filter .2s; }
+        #edge-content .asset-segment:hover, #edge-content .asset-segment:focus { filter:brightness(1.3); outline:1px solid rgb(var(--asset-tone)); }
+        #edge-content .asset-win { --asset-tone:var(--up); color:rgb(var(--up)); }
+        #edge-content .asset-loss { --asset-tone:var(--down); color:rgb(var(--down)); }
+        #edge-content .asset-be { --asset-tone:167 139 250; color:rgb(var(--asset-tone)); }
+        #edge-content .asset-counts { display:flex; justify-content:space-between; gap:6px; flex-wrap:wrap; font-size:.7rem; font-weight:600; }
+        #edge-content .asset-sample { font-size:.62rem; color:rgb(var(--s400)); margin-top:7px; }
+        #edge-content .asset-more { margin-top:10px; }
+        #edge-content .asset-more summary { cursor:pointer; text-align:center; font-size:.72rem; font-weight:700; color:#818cf8; padding:6px; }
+        #edge-content .asset-more .asset-cards { margin-top:8px; }
     </style>
 </head>
 <body>
@@ -3975,28 +3997,39 @@
             const col2 = renderGroup('BY SESSION', getAllSessions().map(s => ({label:s.replace(' Session',''),list:data.filter(t => t.sessions && t.sessions.includes(s))})));
             const col3 = renderGroup('BY ACCOUNT', getAllAccounts().map(a => ({label:a.replace(' Account',''),list:data.filter(t => t.accounts && t.accounts.includes(a))})));
             // ── Performance by Asset / Pair ──
-            let assetSection = '';
-            const assetGroups = {};
+            const assetGroups = new Map();
             data.forEach(t => {
-                [...new Set((t.assets || []).map(cleanLabel).filter(Boolean))].forEach(a => {
-                    const k = a.toLowerCase();
-                    (assetGroups[k] = assetGroups[k] || { label: a, list: [] }).list.push(t);
+                const unique = new Map();
+                (t.assets || []).map(cleanLabel).filter(Boolean).forEach(a => unique.set(a.toLowerCase(), a));
+                unique.forEach((label, key) => {
+                    if (!assetGroups.has(key)) assetGroups.set(key, {label, list: []});
+                    assetGroups.get(key).list.push(t);
                 });
             });
-            const assetRows = Object.values(assetGroups).sort((a, b) =>
-                b.list.length - a.list.length || a.label.localeCompare(b.label));
-            if (assetRows.length) {
-                assetSection = `
-                    <div class="edge-extra">
-                        <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-3">
-                            <h3 class="text-[0.6rem] font-extrabold text-slate-500 tracking-[0.14em] uppercase">Performance by Asset</h3>
-                            <span class="text-[0.6rem] text-slate-600">pale bar = under 5 trades</span>
-                        </div>
-                        <div class="grid gap-x-6 items-start" style="grid-template-columns:repeat(auto-fill,minmax(230px,1fr))">
-                            ${assetRows.map(r => '<div>' + bar(r.label, r.list, { best: net(r.list) > 0 && r === assetRows.reduce((best, item) => net(item.list) > net(best.list) ? item : best) }) + '</div>').join('')}
-                        </div>
-                    </div>`;
+            const assetRows = [...assetGroups.values()].map(r => ({...r, pnl:net(r.list)})).sort((a,b) => b.pnl-a.pnl || b.list.length-a.list.length || a.label.localeCompare(b.label));
+            const assetBest = assetRows[0]?.pnl > 0 ? assetRows[0] : null;
+            const assetMoney = value => value === 0 ? '$0.00' : fmtDollar(value);
+            const assetTone = value => value > 0 ? 'asset-win' : value < 0 ? 'asset-loss' : 'asset-be';
+            function assetCard(r) {
+                const count = r.list.length;
+                const wins = r.list.filter(t => effectiveOutcome(t) === 'WIN').length;
+                const losses = r.list.filter(t => effectiveOutcome(t) === 'LOSS').length;
+                const be = r.list.filter(t => effectiveOutcome(t) === 'BE').length;
+                const wr = wins + losses ? winRate(r.list).toFixed(1)+'%' : '—';
+                const groups = [{name:'Wins',n:wins,cls:'asset-win'},{name:'Losses',n:losses,cls:'asset-loss'},{name:'BE',n:be,cls:'asset-be'}];
+                const segments = groups.filter(g=>g.n).map(g=> {
+                    const tip = `${g.name}: ${g.n} of ${count} trades (${(g.n/count*100).toFixed(1)}%)`;
+                    // Keep the graphic bounded for large trade histories; widths are proportional.
+                    return `<span class="asset-segment ${g.cls}" style="flex:${g.n} 1 0%" tabindex="0" title="${escAttr(tip)}" aria-label="${escAttr(tip)}"></span>`;
+                }).join('');
+                return `<div class="asset-card ${r===assetBest?'is-best':''}">
+                    <div class="asset-top"><div class="edge-label"><span class="asset-name">${escAttr(r.label)}</span>${r===assetBest?'<span class="edge-best">BEST</span>':''}</div><span class="asset-pnl font-mono tabnum ${assetTone(r.pnl)}">${assetMoney(r.pnl)}</span></div>
+                    <div class="asset-metrics"><div><small>Win Rate</small><strong class="${wins+losses?(winRate(r.list)>=50?'asset-win':'asset-loss'):'asset-be'}">${wr}</strong></div><div><small>Total Trades</small><strong>${count}</strong></div><div><small>Avg. PnL</small><strong class="${assetTone(r.pnl)}">${assetMoney(r.pnl/count)}</strong></div></div>
+                    <div class="asset-strip">${segments}</div><div class="asset-counts">${groups.map(g=>`<span class="${g.cls}">${g.n} ${g.name}</span>`).join('')}</div>
+                    ${count<5?'<div class="asset-sample">Small sample · under 5 trades</div>':''}
+                </div>`;
             }
+            const assetSection = `<div class="edge-extra"><h3 class="edge-heading">PERFORMANCE BY ASSET</h3><div class="asset-cards">${assetRows.slice(0,5).map(assetCard).join('') || '<p class="edge-empty">No asset data yet</p>'}</div>${assetRows.length>5?`<details class="asset-more"><summary>View All Assets (${assetRows.length})</summary><div class="asset-cards">${assetRows.slice(5).map(assetCard).join('')}</div></details>`:''}</div>`;
 
             // ── Confluence Setups: ცალკეული setup-ები და ზუსტი კომბინაციები ──
             const confTrades = data.filter(t => Array.isArray(t.confluences) && t.confluences.length);
