@@ -1343,6 +1343,44 @@
         .direction-option:hover input:checked + span {
             box-shadow: 0 8px 22px rgb(var(--selection-glow) / 0.35);
         }
+
+        /* Edge Breakdown — static, theme-aware cards */
+        #edge-section { container-type:inline-size; min-width:0; }
+        #edge-section .edge-header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px 12px; flex-wrap:wrap; }
+        #edge-section .edge-header h2 { font-size: .78rem; letter-spacing:.11em; }
+        #edge-section .edge-header .bg-amber-400 { box-shadow:0 0 12px rgb(var(--amber) / .55); width:8px; height:8px; }
+        #edge-period-filter { font-size:.7rem; font-weight:600; padding:7px 9px; }
+        .edge-body { padding: 0 12px 14px; }
+        #edge-content { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+        #edge-content .edge-group, #edge-content .edge-extra { min-width:0; border:1px solid rgb(var(--line) / .85); background:rgb(var(--field) / .42); border-radius:12px; padding:9px; }
+        #edge-content .edge-extra { grid-column:1 / -1; }
+        #edge-content .edge-heading { display:flex; align-items:center; gap:5px; color:rgb(var(--s400)); font-size:.64rem; font-weight:800; letter-spacing:.13em; margin:0 0 15px; }
+        #edge-content .edge-heading::after { content:''; flex:1; height:1px; background:rgb(var(--line) / .85); }
+        #edge-content .edge-row { margin:0 0 15px; }
+        #edge-content .edge-row:last-child { margin-bottom:3px; }
+        #edge-content .edge-row-top, #edge-content .edge-row-bottom { display:flex; align-items:center; justify-content:space-between; gap:4px; }
+        #edge-content .edge-row-bottom { margin-top:5px; }
+        #edge-content .edge-label { min-width:0; display:flex; align-items:center; flex-wrap:wrap; gap:4px; }
+        #edge-content .edge-name { font-size:.72rem; font-weight:700; color:rgb(var(--s200)); overflow-wrap:anywhere; }
+        #edge-content .edge-count { border-radius:999px; background:rgb(var(--s800)); color:rgb(var(--s400)); padding:1px 5px; font-size:.6rem; font-weight:700; }
+        #edge-content .edge-best { border:1px solid rgb(var(--amber) / .45); background:rgb(var(--amber) / .09); color:rgb(var(--amber)); box-shadow:0 0 9px rgb(var(--amber) / .13); border-radius:999px; padding:1px 5px; font-size:.56rem; font-weight:800; letter-spacing:.04em; }
+        #edge-content .edge-pnl, #edge-content .edge-rate { white-space:nowrap; font-size:.68rem; font-weight:700; flex-shrink:0; }
+        #edge-content .edge-rate { min-width:0; text-align:right; }
+        #edge-content .edge-track { flex:1; height:6px; border-radius:999px; background:rgb(var(--s800) / .72); overflow:hidden; }
+        #edge-content .edge-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,#168957,#22c97a); }
+        #edge-content .small-sample .edge-name, #edge-content .small-sample .edge-pnl, #edge-content .small-sample .edge-rate { opacity:.72; }
+        #edge-content .edge-empty { color:rgb(var(--s500)); font-size:.7rem; }
+        #edge-content .edge-extra h3 { font-size:.8rem; }
+        #edge-content .edge-extra h4 { font-size:.72rem; }
+        #edge-content .edge-extra .font-mono { font-size:.72rem; }
+        #edge-content .edge-extra .progress-fill { min-height:0; }
+        @container (max-width: 375px) { #edge-content { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @container (max-width: 250px) { #edge-content { grid-template-columns:1fr; } }
+        #edge-content .edge-group .edge-row-top { flex-wrap:wrap; }
+        #edge-content .edge-group .edge-pnl { margin-left:auto; }
+        #edge-content .edge-track { min-width:0; }
+        #edge-content .edge-heading { overflow-wrap:anywhere; }
+        #edge-content .edge-extra > .grid { grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr)) !important; gap:12px; }
     </style>
 </head>
 <body>
@@ -1498,25 +1536,24 @@
                     <!-- LEFT COLUMN -->
                     <div class="space-y-4">
 
-                        <!-- Your Edge Breakdown (collapsible) -->
-                        <details id="edge-section" class="card rounded-xl overflow-hidden" open>
-                            <summary class="flex items-center justify-between px-5 py-3.5 hover:bg-white/[0.015] transition-colors">
+                        <!-- Your Edge Breakdown (always visible) -->
+                        <section id="edge-section" class="card rounded-xl overflow-hidden">
+                            <header class="edge-header">
                                 <div class="flex items-center gap-3">
-                                    <span class="chevron text-slate-500 text-[0.65rem]">▶</span>
                                     <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
                                     <h2 class="text-xs font-extrabold text-white tracking-[0.12em] uppercase">Your Edge Breakdown</h2>
                                 </div>
-                                <div class="no-drag" onclick="event.stopPropagation()">
+                                <div class="no-drag">
                                     <select id="edge-period-filter"
                                         class="bg-surface-900 border border-slate-700/50 rounded-lg text-[0.65rem] text-slate-400 px-2.5 py-1 focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 cursor-pointer">
                                         <option value="all">All-Time Edge</option>
                                     </select>
                                 </div>
-                            </summary>
-                            <div class="px-5 pb-5">
-                                <div id="edge-content" class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-1"></div>
+                            </header>
+                            <div class="edge-body">
+                                <div id="edge-content"></div>
                             </div>
-                        </details>
+                        </section>
 
                     </div>
 
@@ -3896,46 +3933,32 @@
         function renderEdge() {
             const data = getEdgeFiltered();
             const box  = document.getElementById('edge-content');
-            function bar(label, subset, opts) {
-                opts = opts || {};
-                const rate   = winRate(subset);
-                const count  = subset.length;
-                if (count === 0) return '';   // ჩანაწერის გარეშე ხაზი არ ჩანს
-                const netPnl = subset.reduce((s, t) => s + pnlSigned(t), 0);
-                const color  = rate >= 50 ? 'bg-green-500' : 'bg-rose-500';
-                const txt    = rate >= 50 ? 'text-green-400' : 'text-rose-400';
-                const pnlCls = netPnl >= 0 ? 'text-green-400' : 'text-rose-400';
-                return `
-                    <div class="mb-2.5 ${count < 5 ? 'small-sample' : ''}" ${count < 5 ? 'title="Small sample (' + count + ' trades)"' : ''}>
-                        <div class="flex ${opts.inline ? 'flex-nowrap' : 'flex-wrap'} items-center justify-between gap-x-2 gap-y-0.5 mb-1">
-                            <span class="text-[0.7rem] text-slate-300 font-semibold ${opts.inline ? 'break-words min-w-0' : opts.wrap ? 'break-words min-w-0' : 'whitespace-nowrap'}" title="${escAttr(label)}">${escAttr(label)}</span>
-                            <span class="text-[0.65rem] font-mono font-bold ${txt} tabnum whitespace-nowrap ml-auto ${opts.inline ? 'shrink-0' : ''}">${rate.toFixed(1)}%
-                                <span class="${pnlCls} font-normal ml-1">${fmtDollar(netPnl)}</span>
-                                <span class="text-slate-600 font-normal ml-0.5">(${count})</span>
-                            </span>
-                        </div>
-                        <div class="w-full h-1 bg-slate-800/60 rounded-full overflow-hidden">
-                            <div class="progress-fill h-full ${color} rounded-full" style="width:${rate}%"></div>
-                        </div>
-                    </div>`;
+            function net(subset) { return subset.reduce((sum, t) => sum + pnlSigned(t), 0); }
+            function bar(label, subset, opts = {}) {
+                const count = subset.length;
+                if (!count) return '';
+                const rate = winRate(subset), netPnl = net(subset);
+                const txt = rate >= 50 ? 'text-green-400' : 'text-rose-400';
+                const pnlCls = netPnl > 0 ? 'text-green-400' : netPnl < 0 ? 'text-rose-400' : 'text-slate-400';
+                return `<div class="edge-row ${count < 5 ? 'small-sample' : ''}" ${count < 5 ? 'title="Small sample (' + count + ' trades)"' : ''}>
+                    <div class="edge-row-top">
+                        <div class="edge-label"><span class="edge-name" title="${escAttr(label)}">${escAttr(label)}</span><span class="edge-count">${count}</span>${opts.best ? '<span class="edge-best">BEST</span>' : ''}</div>
+                        <span class="edge-pnl font-mono tabnum ${pnlCls}">${netPnl === 0 ? '$0' : fmtDollar(netPnl)}</span>
+                    </div>
+                    <div class="edge-row-bottom">
+                        <div class="edge-track"><div class="progress-fill edge-fill" style="width:${rate}%"></div></div>
+                        <span class="edge-rate font-mono tabnum ${txt}">${rate.toFixed(1)}%</span>
+                    </div>
+                </div>`;
             }
-            let col1 = '<h3 class="text-[0.6rem] font-extrabold text-slate-500 tracking-[0.14em] uppercase mb-2.5">Performance by Day</h3>';
-            ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].forEach(day => {
-                col1 += bar(day.substring(0, 3), data.filter(t => DAYS_FULL[new Date(t.datetime).getDay()] === day));
-            });
-            let col2 = '<h3 class="text-[0.6rem] font-extrabold text-slate-500 tracking-[0.14em] uppercase mb-2.5">Performance by Session</h3>';
-            getAllSessions().forEach(s => {
-                col2 += bar(s.replace(' Session', ''), data.filter(t => t.sessions && t.sessions.includes(s)));
-            });
-            let col3 = '<h3 class="text-[0.6rem] font-extrabold text-slate-500 tracking-[0.14em] uppercase mb-2.5">Performance by Account</h3>';
-            getAllAccounts().forEach(a => {
-                col3 += bar(a.replace(' Account', ''), data.filter(t => t.accounts && t.accounts.includes(a)));
-            });
-            const emptyMsg = '<p class="text-[0.65rem] text-slate-600">No data yet</p>';
-            const hasBars = html => html.indexOf('progress-fill') !== -1;
-            if (!hasBars(col1)) col1 += emptyMsg;
-            if (!hasBars(col2)) col2 += emptyMsg;
-            if (!hasBars(col3)) col3 += emptyMsg;
+            function renderGroup(title, rows) {
+                const active = rows.filter(r => r.list.length);
+                const best = active.reduce((winner, r) => net(r.list) > (winner ? net(winner.list) : 0) ? r : winner, null);
+                return `<div class="edge-group"><h3 class="edge-heading">${title}</h3>${active.map(r => bar(r.label, r.list, {best:r === best})).join('') || '<p class="edge-empty">No data yet</p>'}</div>`;
+            }
+            const col1 = renderGroup('BY DAY', ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(day => ({label:day.substring(0,3),list:data.filter(t => DAYS_FULL[new Date(t.datetime).getDay()] === day)})));
+            const col2 = renderGroup('BY SESSION', getAllSessions().map(s => ({label:s.replace(' Session',''),list:data.filter(t => t.sessions && t.sessions.includes(s))})));
+            const col3 = renderGroup('BY ACCOUNT', getAllAccounts().map(a => ({label:a.replace(' Account',''),list:data.filter(t => t.accounts && t.accounts.includes(a))})));
             // ── Performance by Asset / Pair ──
             let assetSection = '';
             const assetGroups = {};
@@ -3949,13 +3972,13 @@
                 b.list.length - a.list.length || a.label.localeCompare(b.label));
             if (assetRows.length) {
                 assetSection = `
-                    <div class="md:col-span-3 pt-4 mt-1 border-t border-slate-800/40">
+                    <div class="edge-extra">
                         <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-3">
                             <h3 class="text-[0.6rem] font-extrabold text-slate-500 tracking-[0.14em] uppercase">Performance by Asset</h3>
                             <span class="text-[0.6rem] text-slate-600">pale bar = under 5 trades</span>
                         </div>
                         <div class="grid gap-x-6 items-start" style="grid-template-columns:repeat(auto-fill,minmax(230px,1fr))">
-                            ${assetRows.map(r => '<div>' + bar(r.label, r.list, { inline: true }) + '</div>').join('')}
+                            ${assetRows.map(r => '<div>' + bar(r.label, r.list, { best: net(r.list) > 0 && r === assetRows.reduce((best, item) => net(item.list) > net(best.list) ? item : best) }) + '</div>').join('')}
                         </div>
                     </div>`;
             }
@@ -3987,7 +4010,7 @@
                 if (!comboRows.length) comboHtml = '<p class="text-[0.65rem] text-slate-600">No combinations yet (2+ confluences on one trade)</p>';
 
                 confSection = `
-                    <div class="md:col-span-3 pt-4 mt-1 border-t border-slate-800/40">
+                    <div class="edge-extra">
                         <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-3">
                             <h3 class="text-[0.6rem] font-extrabold text-slate-500 tracking-[0.14em] uppercase">Confluence Setups</h3>
                             <span class="text-[0.6rem] text-slate-600">${confTrades.length} of ${data.length} trades have confluences · pale bar = under 5 trades</span>
@@ -4054,7 +4077,7 @@
                 }
 
                 riskSection = `
-                    <div class="md:col-span-3 pt-4 mt-1 border-t border-slate-800/40">
+                    <div class="edge-extra">
                         <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-3">
                             <h3 class="text-[0.6rem] font-extrabold text-slate-500 tracking-[0.14em] uppercase">Risk : Reward</h3>
                             <span class="text-[0.6rem] text-slate-600">${rrTrades.length} of ${data.length} trades have Risk logged</span>
@@ -4066,7 +4089,7 @@
                         ${list}
                     </div>`;
             }
-            box.innerHTML = `<div>${col1}</div><div>${col2}</div><div>${col3}</div>${assetSection}${confSection}${riskSection}`;
+            box.innerHTML = `${col1}${col2}${col3}${assetSection}${confSection}${riskSection}`;
         }
 
         /* ══════════════════════════════════════════════════════
