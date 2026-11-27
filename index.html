@@ -1381,6 +1381,21 @@
         #edge-content .edge-track { min-width:0; }
         #edge-content .edge-heading { overflow-wrap:anywhere; }
         #edge-content .edge-extra > .grid { grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr)) !important; gap:12px; }
+
+        #edge-content .rr-layout { display:grid; grid-template-columns:minmax(0, 44%) minmax(0, 1fr); align-items:center; gap:12px; }
+        #edge-content .rr-donut { width:100%; display:block; overflow:visible; }
+        #edge-content .rr-segment { outline:none; cursor:default; transition:stroke-width .18s, opacity .18s; }
+        #edge-content .rr-segment:hover, #edge-content .rr-segment:focus { stroke-width:19; }
+        #edge-content .rr-label { display:flex; align-items:center; gap:7px; min-width:0; padding:6px 4px; border-radius:6px; }
+        #edge-content .rr-label:hover, #edge-content .rr-label:focus { background:rgb(var(--s800) / .45); outline:none; }
+        #edge-content .rr-dot { width:8px; height:8px; flex:none; border-radius:50%; background:var(--rr-color); box-shadow:0 0 8px var(--rr-color); }
+        #edge-content .rr-name { font-size:.75rem; font-weight:700; color:var(--rr-color); overflow-wrap:anywhere; }
+        #edge-content .rr-share { margin-left:auto; text-align:right; flex:none; font-size:.72rem; font-weight:700; color:rgb(var(--s200)); }
+        #edge-content .rr-count { display:block; font-size:.64rem; font-weight:400; color:rgb(var(--s400)); }
+        #edge-content .rr-details { border-top:1px solid rgb(var(--line)); margin-top:12px; padding-top:9px; }
+        #edge-content .rr-details summary { cursor:pointer; text-align:center; color:#818cf8; font-size:.72rem; font-weight:700; }
+        #edge-content .rr-all { max-height:240px; overflow:auto; margin-top:8px; }
+        @container (max-width: 300px) { #edge-content .rr-layout { grid-template-columns:1fr; } #edge-content .rr-donut { max-width:170px; margin:auto; } }
     </style>
 </head>
 <body>
@@ -4028,67 +4043,44 @@
                     </div>`;
             }
 
-            // ── RR სტატისტიკა: რომელ RR-ზე ვხურავ ტრეიდებს ყველაზე ხშირად / იშვიათად ──
-            // RR = შედეგი / რისკი (Risk $ უნდა იყოს შევსებული), დაჯგუფება 1 ათწილადამდე
-            const rrTrades = data.filter(t => typeof t.riskAmount === 'number' && t.riskAmount > 0);
-            let riskSection = '';
-            if (rrTrades.length) {
-                const groups = {};
-                rrTrades.forEach(t => {
-                    const r = Math.round(Math.abs(pnlSigned(t)) / t.riskAmount * 10) / 10;
-                    let key, label, kind, sortVal;
-                    if (effectiveOutcome(t) === 'WIN')       { kind = 'win';  label = '1:' + r;      sortVal = r; }
-                    else if (effectiveOutcome(t) === 'LOSS') { kind = 'loss'; label = '-' + r + 'R'; sortVal = -r; }
-                    else                           { kind = 'be';   label = '1:0';         sortVal = 0; }
-                    key = kind + '|' + label;
-                    if (!groups[key]) groups[key] = { label, kind, sortVal, count: 0 };
-                    groups[key].count++;
-                });
-                const rows = Object.values(groups).sort((x, y) => y.count - x.count || y.sortVal - x.sortVal);
-                const total = rrTrades.length;
-                const MAX_ROWS = 10;
-                const maxCount = rows[0].count;
-                const minCount = rows[rows.length - 1].count;
-                const mostRows  = rows.filter(r => r.count === maxCount);
-                const leastRows = rows.filter(r => r.count === minCount);
-                const pctOf = c => (c / total * 100).toFixed(1) + '%';
-                const showLeast = minCount < maxCount;
-                const tagList = arr => arr.slice(0, 3).map(r => `<span class="font-mono font-bold ${colorOf(r.kind)[0]}">${r.label}</span>`).join('<span class="text-slate-600">, </span>') + (arr.length > 3 ? ' <span class="text-slate-600">+' + (arr.length - 3) + '</span>' : '');
-                const colorOf = k => k === 'win' ? ['text-green-400', 'bg-green-500'] : k === 'loss' ? ['text-rose-400', 'bg-rose-500'] : ['text-slate-400', 'bg-slate-500'];
-
-                let list = '';
-                rows.slice(0, MAX_ROWS).forEach(r => {
-                    const share = r.count / total * 100;
-                    const [txtCls, barCls] = colorOf(r.kind);
-                    list += `
-                        <div class="grid grid-cols-[64px_minmax(0,1fr)_auto] items-center gap-3 mb-2">
-                            <span class="text-[0.7rem] font-mono font-bold ${txtCls} tabnum whitespace-nowrap">${r.label}</span>
-                            <div class="w-full h-1.5 bg-surface-900 rounded-full overflow-hidden">
-                                <div class="progress-fill h-full ${barCls} rounded-full" style="width:${share}%"></div>
-                            </div>
-                            <span class="text-[0.65rem] font-mono tabnum whitespace-nowrap text-right">
-                                <span class="font-bold text-slate-200">${share.toFixed(1)}%</span>
-                                <span class="text-slate-600 ml-0.5">(${r.count})</span>
-                            </span>
-                        </div>`;
-                });
-                if (rows.length > MAX_ROWS) {
-                    list += `<p class="text-[0.6rem] text-slate-600">+ ${rows.length - MAX_ROWS} more</p>`;
-                }
-
-                riskSection = `
-                    <div class="edge-extra">
-                        <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-3">
-                            <h3 class="text-[0.6rem] font-extrabold text-slate-500 tracking-[0.14em] uppercase">Risk : Reward</h3>
-                            <span class="text-[0.6rem] text-slate-600">${rrTrades.length} of ${data.length} trades have Risk logged</span>
-                        </div>
-                        <div class="flex flex-wrap gap-x-8 gap-y-1 mb-3 text-[0.7rem]">
-                            <span class="text-slate-500">Most often: ${tagList(mostRows)} <span class="font-mono text-slate-400">${pctOf(maxCount)}</span></span>
-                            ${showLeast ? `<span class="text-slate-500">Least often: ${tagList(leastRows)} <span class="font-mono text-slate-400">${pctOf(minCount)}</span></span>` : ''}
-                        </div>
-                        ${list}
-                    </div>`;
-            }
+            // Realized R distribution, using the existing signed PnL and risk convention.
+            const rrTrades = data.filter(t => typeof t.riskAmount === 'number' && Number.isFinite(t.riskAmount) && t.riskAmount > 0 && Number.isFinite(pnlSigned(t)) && Number.isFinite(Math.abs(pnlSigned(t)) / t.riskAmount * 10));
+            const groups = new Map();
+            rrTrades.forEach(t => {
+                const r = Math.round(Math.abs(pnlSigned(t)) / t.riskAmount * 10) / 10;
+                const outcome = effectiveOutcome(t);
+                const kind = outcome === 'WIN' ? 'win' : outcome === 'LOSS' ? 'loss' : 'be';
+                const label = kind === 'win' ? '1:' + r : kind === 'loss' ? '-' + r + 'R' : '1:0';
+                const key = kind + '|' + label;
+                if (!groups.has(key)) groups.set(key, {label, sortVal: kind === 'loss' ? -r : kind === 'win' ? r : 0, list: []});
+                groups.get(key).list.push(t);
+            });
+            const rows = [...groups.values()].sort((a,b) => b.list.length - a.list.length || b.sortVal - a.sortVal || a.label.localeCompare(b.label));
+            const total = rrTrades.length;
+            const palette = ['#22c97a','#818cf8','#eab308','#38bdf8','#f472b6'];
+            const top = rows.slice(0,5).map((r,i) => ({...r,color:palette[i]}));
+            const displayed = [...top];
+            if (rows.length > 5) displayed.push({label:'Others', color:'#64748b', list:rows.slice(5).flatMap(r=>r.list)});
+            const share = r => total ? r.list.length / total * 100 : 0;
+            const tip = r => {
+                const decided = r.list.filter(t => ['WIN','LOSS'].includes(effectiveOutcome(t))).length;
+                const wins = r.list.filter(t => effectiveOutcome(t) === 'WIN').length;
+                return `${r.label} | ${r.list.length} Trades | Usage: ${share(r).toFixed(1)}% | Win Rate: ${decided ? (wins / decided * 100).toFixed(1)+'%' : '—'} | Net PnL: ${net(r.list) === 0 ? '$0' : fmtDollar(net(r.list))}`;
+            };
+            const legend = r => `<div class="rr-label" tabindex="0" style="--rr-color:${r.color}" title="${escAttr(tip(r))}" aria-label="${escAttr(tip(r))}"><span class="rr-dot"></span><span class="rr-name">${escAttr(r.label)}</span><span class="rr-share">${share(r).toFixed(1)}%<span class="rr-count">${r.list.length} Trades</span></span></div>`;
+            let offset = 0;
+            const arcs = displayed.map(r => {
+                const length = share(r), gap = displayed.length > 1 ? Math.min(1.6,length * .22) : 0;
+                const start = offset + gap/2;
+                offset += length;
+                return `<circle class="rr-segment" cx="100" cy="100" r="76" pathLength="100" fill="none" stroke="${r.color}" stroke-width="14" stroke-dasharray="${length-gap} ${100-length+gap}" stroke-dashoffset="${-start}" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 4px ${r.color}66)" tabindex="0" aria-label="${escAttr(tip(r))}"><title>${escAttr(tip(r))}</title></circle>`;
+            }).join('');
+            const most = top[0];
+            const riskSection = `<div class="edge-extra rr-card">
+                <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-3"><h3 class="text-[0.6rem] font-extrabold text-slate-500 tracking-[0.14em] uppercase">Risk : Reward</h3><span class="text-[0.6rem] text-slate-500">${total} of ${data.length} trades have valid Risk logged</span></div>
+                <div class="rr-layout"><svg class="rr-donut" viewBox="0 0 200 200" aria-label="Realized risk reward distribution"><circle cx="100" cy="100" r="76" fill="none" stroke="rgb(var(--s800))" stroke-width="14"/>${arcs}<g pointer-events="none" text-anchor="middle"><text x="100" y="80" font-size="10" fill="rgb(var(--s400))" letter-spacing="1">${most?'MOST USED':'NO DATA'}</text><text x="100" y="108" font-size="${most && most.label.length>7?16:26}" font-weight="800" fill="${most?most.color:'rgb(var(--s400))'}">${most?escAttr(most.label):'—'}</text><text x="100" y="128" font-size="13" fill="rgb(var(--s400))">${most?share(most).toFixed(1)+'%':'0 Trades'}</text></g></svg><div>${displayed.map(legend).join('') || '<p class="edge-empty">Log risk amounts to see R:R distribution.</p>'}</div></div>
+                ${rows.length>5?`<details class="rr-details"><summary>View All R:R (${rows.length})</summary><div class="rr-all">${rows.map((r,i)=>legend({...r,color:palette[i]||'#64748b'})).join('')}</div></details>`:''}
+            </div>`;
             box.innerHTML = `${col1}${col2}${col3}${assetSection}${confSection}${riskSection}`;
         }
 
