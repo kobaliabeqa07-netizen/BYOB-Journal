@@ -1468,6 +1468,27 @@
         #edge-conf-content .cf-more { width:100%; padding:7px; margin-top:5px; color:#818cf8; font-size:.72rem; font-weight:700; cursor:pointer; }
         #edge-conf-content [hidden] { display:none !important; }
         @container (max-width:220px) { #edge-conf-content .cf-card { grid-template-columns:minmax(0,1fr) 64px; padding:6px; } }
+
+        /* BY DAY: compact diverging weekly chart, isolated from other Edge groups. */
+        #edge-content .weekday-chart { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; }
+        #edge-content .weekday-item { min-width:0; display:grid; grid-template-rows:156px 29px auto; gap:6px; text-align:center; outline-offset:2px; --day-rgb:148 163 184; }
+        #edge-content .weekday-item.profit { --day-rgb:34 201 122; }
+        #edge-content .weekday-item.loss { --day-rgb:236 133 147; }
+        #edge-content .weekday-item.even { --day-rgb:167 139 250; }
+        #edge-content .weekday-plot { position:relative; min-width:0; background:repeating-linear-gradient(to bottom,transparent 0,transparent 38px,rgb(var(--line) / .55) 39px,transparent 40px); }
+        #edge-content .weekday-plot::before { content:''; position:absolute; left:0; right:0; top:50%; border-top:1px solid rgb(var(--s400) / .45); }
+        #edge-content .weekday-bar { position:absolute; left:22%; width:56%; height:var(--bar-height); border-radius:5px; background:linear-gradient(to top,rgb(var(--day-rgb) / .55),rgb(var(--day-rgb))); box-shadow:0 0 10px rgb(var(--day-rgb) / .38); animation:weekday-grow .35s ease-out both; }
+        #edge-content .profit .weekday-bar { bottom:50%; transform-origin:bottom; }
+        #edge-content .loss .weekday-bar { top:50%; transform-origin:top; }
+        #edge-content .even .weekday-bar { top:calc(50% - 3px); height:6px; }
+        #edge-content .weekday-money { position:absolute; left:0; right:0; font-size:.63rem; font-weight:800; color:rgb(var(--day-rgb)); line-height:1.1; overflow-wrap:anywhere; }
+        #edge-content .weekday-badge { display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:800; border-radius:7px; color:rgb(var(--day-rgb)); background:rgb(var(--day-rgb) / .12); border:1px solid rgb(var(--day-rgb) / .42); box-shadow:0 0 7px rgb(var(--day-rgb) / .12); }
+        #edge-content .weekday-item.best .weekday-badge { color:#fbbf24; background:rgb(251 191 36 / .12); border-color:rgb(251 191 36 / .65); box-shadow:0 0 9px rgb(251 191 36 / .24); }
+        #edge-content .weekday-best { position:absolute; top:0; left:0; right:0; color:#fbbf24; font-size:.52rem; font-weight:800; }
+        #edge-content .weekday-count { font-size:.58rem; color:rgb(var(--s400)); line-height:1.2; }
+        #edge-content .weekday-item:hover .weekday-bar, #edge-content .weekday-item:focus-visible .weekday-bar { box-shadow:0 0 14px rgb(var(--day-rgb) / .65); }
+        @keyframes weekday-grow { from { transform:scaleY(0); } to { transform:scaleY(1); } }
+        @media (prefers-reduced-motion:reduce) { #edge-content .weekday-bar { animation:none; } }
     </style>
 </head>
 <body>
@@ -4060,7 +4081,28 @@
                 if (!active.length) return '';
                 return `<div class="edge-group"><h3 class="edge-heading">${title}</h3>${active.map(r => segmentedRow(r.label, r.list, r === best, r.sessionRgb)).join('')}</div>`;
             }
-            const col1 = renderGroup('BY DAY', ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(day => ({label:day.substring(0,3),list:data.filter(t => DAYS_FULL[new Date(t.datetime).getDay()] === day)})));
+            function renderWeekdayChart() {
+                const rows = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(day => {
+                    const list = data.filter(t => DAYS_FULL[new Date(t.datetime).getDay()] === day);
+                    return {day,list,pnl:net(list)};
+                });
+                if (!rows.some(r=>r.list.length)) return '';
+                const best = rows.reduce((b,r)=>r.pnl>(b?b.pnl:0)?r:b,null);
+                const scale = Math.max(1,...rows.map(r=>Math.abs(r.pnl)));
+                return `<div class="edge-group"><h3 class="edge-heading">BY DAY</h3><div class="weekday-chart">${rows.map(r=>{
+                    const count=r.list.length;
+                    const w=r.list.filter(t=>effectiveOutcome(t)==='WIN').length;
+                    const l=r.list.filter(t=>effectiveOutcome(t)==='LOSS').length;
+                    const b=r.list.filter(t=>effectiveOutcome(t)==='BE').length;
+                    const tone=!count?'empty':r.pnl>0?'profit':r.pnl<0?'loss':'even';
+                    const height=r.pnl===0?0:Math.max(2,Math.abs(r.pnl)/scale*32);
+                    const money=!count?'—':r.pnl===0?'$0':fmtDollar(r.pnl);
+                    const tip=`${r.day} · ${count} trades\nNet PnL: ${money}\nWin Rate: ${w+l?winRate(r.list).toFixed(1)+'%':'—'}\nWins: ${w} · Losses: ${l} · BE: ${b}`;
+                    const position=r.pnl<0?`top:${50+height+2}%`:`bottom:${50+height+2}%`;
+                    return `<div class="weekday-item ${tone}${r===best?' best':''}" tabindex="0" title="${escAttr(tip)}" aria-label="${escAttr(tip)}"><div class="weekday-plot">${r===best?'<span class="weekday-best">BEST</span>':''}${count?`<span class="weekday-bar" style="--bar-height:${height}%"></span>`:''}<span class="weekday-money" style="${position}">${money}</span></div><span class="weekday-badge">${r.day.slice(0,3).toUpperCase()}</span><span class="weekday-count">${count} ${count===1?'Trade':'Trades'}</span></div>`;
+                }).join('')}</div></div>`;
+            }
+            const col1 = renderWeekdayChart();
             const sessionRgb = label => {
                 const key=cleanLabel(label).toLowerCase();
                 const saved=readColors().sessions[key];
