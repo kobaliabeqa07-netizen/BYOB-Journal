@@ -2,7 +2,7 @@
 // BYOB Journal — Electron Main Process
 // Manages the native desktop window lifecycle.
 // ══════════════════════════════════════════════════════════════
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, nativeImage } = require('electron');
 const fs = require('fs/promises');
 const path = require('path');
 const { pathToFileURL } = require('url');
@@ -273,6 +273,35 @@ ipcMain.handle('workspace:save-attachment', async (_event, payload) => {
     return saveAttachment(payload && payload.workspace, payload && payload.file);
 });
 
+// Gallery thumbnails: persistent derived cache, no change to original files.
+const { createHash } = require('crypto');
+const galleryThumbRoot = () => path.join(app.getPath('userData'), 'gallery-thumbnails-v1');
+const galleryThumbKey = p => createHash('sha256').update(path.resolve(p)).digest('hex');
+async function galleryThumbnail(payload) {
+    const { resolvedPath } = resolveInsideWorkspacesRoot(payload && payload.path);
+    const [root, source] = await Promise.all([fs.realpath(getWorkspacesRoot()), fs.realpath(resolvedPath)]);
+    const rel = path.relative(root, source);
+    if (!rel || rel.startsWith('..'+path.sep) || path.isAbsolute(rel) || rel==='..' || path.basename(path.dirname(source)).toLowerCase() !== 'attachments' || !/\.(png|jpe?g|webp|gif|bmp)$/i.test(source)) throw new Error('Invalid attachment path');
+    const stat = await fs.stat(source);
+    if (!stat.isFile() || stat.size > 5*1024*1024) throw new Error('Invalid attachment size');
+    const dir = galleryThumbRoot(), dest = path.join(dir, galleryThumbKey(resolvedPath)+'.png');
+    await fs.mkdir(dir,{recursive:true});
+    try { const cached=await fs.stat(dest); if(cached.isFile() && cached.mtimeMs>=stat.mtimeMs) return {url:pathToFileURL(dest).href}; } catch (_) {}
+    const image = nativeImage.createFromPath(source);
+    if (image.isEmpty()) return {url:pathToFileURL(source).href};
+    const {width,height}=image.getSize();
+    if (!width || !height) throw new Error('Invalid image');
+    const scale=Math.min(1,720/width,480/height);
+    const thumbnail=scale<1?image.resize({width:Math.max(1,Math.round(width*scale)),height:Math.max(1,Math.round(height*scale)),quality:'good'}):image;
+    const png=thumbnail.toPNG();
+    // A deleted or replaced file may disappear while a thumbnail is being generated.
+    await fs.access(source);
+    await fs.writeFile(dest,png);
+    try { await fs.access(source); } catch (err) { await fs.rm(dest,{force:true}); throw err; }
+    return {url:pathToFileURL(dest).href};
+}
+ipcMain.handle('workspace:gallery-thumbnail', (_event,payload)=>galleryThumbnail(payload));
+
 ipcMain.handle('workspace:delete-attachment', async (_event, attachment) => {
     if (!attachment || !attachment.path) {
         return { ok: true };
@@ -291,6 +320,7 @@ ipcMain.handle('workspace:delete-attachment', async (_event, attachment) => {
         }
     }
 
+    await fs.rm(path.join(galleryThumbRoot(), galleryThumbKey(resolvedPath)+'.png'), {force:true}).catch(err=>console.error('Thumbnail cleanup failed:',err));
     return { ok: true };
 });
 

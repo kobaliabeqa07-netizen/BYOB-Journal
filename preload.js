@@ -38,6 +38,7 @@ contextBridge.exposeInMainWorld('byobWorkspace', {
             file: fileData
         });
     },
+    getGalleryThumbnail: (attachment) => ipcRenderer.invoke('workspace:gallery-thumbnail', {path: attachment && attachment.path}),
     deleteAttachment: (attachment) => ipcRenderer.invoke('workspace:delete-attachment', attachment)
 });
 

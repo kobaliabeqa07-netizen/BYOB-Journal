@@ -1489,6 +1489,65 @@
         #edge-content .weekday-item:hover .weekday-bar, #edge-content .weekday-item:focus-visible .weekday-bar { box-shadow:0 0 14px rgb(var(--day-rgb) / .65); }
         @keyframes weekday-grow { from { transform:scaleY(0); } to { transform:scaleY(1); } }
         @media (prefers-reduced-motion:reduce) { #edge-content .weekday-bar { animation:none; } }
+        /* Trade Gallery — isolated styles */
+        #workspace-gallery-panel[hidden] { display:none !important; }
+        .gallery-shell { padding: 0 4px; }
+        .gallery-head { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 0 14px; }
+        .gallery-head h2 { color:rgb(var(--white)); font-size:1.12rem; font-weight:700; }
+        .gallery-muted { color:rgb(var(--s400)); font-size:.75rem; }
+        .gallery-toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+        .gallery-outcomes,.gallery-tools { display:flex; flex-wrap:wrap; align-items:center; gap:7px; }
+        .gallery-btn { border:1px solid rgb(var(--line)); background:var(--bg-input); color:rgb(var(--s300)); font-size:.72rem; font-weight:650; padding:6px 10px; border-radius:6px; cursor:pointer; }
+        .gallery-btn:hover { border-color:rgb(var(--accent)); color:rgb(var(--accent)); }
+        .gallery-btn:focus-visible,.gallery-photo:focus-visible,.gallery-view-trade:focus-visible { outline:2px solid rgb(var(--accent)); outline-offset:2px; }
+        .gallery-btn:disabled { opacity:.4; cursor:default; }
+        .gallery-outcomes .gallery-btn { --filter-color:rgb(var(--up)); color:var(--filter-color); padding:5px 10px; background:var(--bg-card); }
+        .gallery-outcomes [data-gallery-outcome="LOSS"] { --filter-color:rgb(var(--down)); }
+        .gallery-outcomes [data-gallery-outcome="BE"] { --filter-color:#a78bfa; }
+        .gallery-outcomes .gallery-btn[aria-pressed="true"] { background:color-mix(in srgb,var(--filter-color) 15%,var(--bg-input)); border-color:color-mix(in srgb,var(--filter-color) 65%,transparent); box-shadow:0 0 8px color-mix(in srgb,var(--filter-color) 12%,transparent); }
+        .gallery-icon-btn { display:grid; place-items:center; width:28px; height:28px; padding:5px; }
+        .gallery-icon-btn svg { width:15px; height:15px; }
+        #gallery-grid-toggle { color:rgb(var(--accent)); }
+        .gallery-icon-btn[aria-pressed="true"] { border-color:rgb(var(--accent)/.65); background:rgb(var(--accent)/.1); color:rgb(var(--accent)); }
+        .gallery-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); gap:12px; padding:0 0 16px; }
+        .gallery-grid.gallery-large { grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr)); }
+        .gallery-card { min-width:0; overflow:hidden; border:1px solid color-mix(in srgb,var(--gallery-result) 32%,rgb(var(--line))); border-radius:10px; background:var(--bg-card); display:flex; flex-direction:column; }
+        .gallery-card:hover { box-shadow:0 4px 18px color-mix(in srgb,var(--gallery-result) 12%,transparent); }
+        .gallery-photo { display:grid; place-items:center; width:100%; aspect-ratio:5/3; position:relative; background:rgb(var(--f950)); overflow:hidden; border:0; cursor:zoom-in; }
+        .gallery-photo img { width:100%; height:100%; object-fit:contain; position:absolute; inset:0; }
+        .gallery-photo img[hidden] { display:none; }
+        .gallery-body { padding:12px; display:flex; flex:1; flex-direction:column; gap:8px; }
+        .gallery-row { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+        .gallery-asset { font-size:.95rem; font-weight:750; color:rgb(var(--white)); overflow-wrap:anywhere; }
+        .gallery-pnl { font:700 .95rem 'JetBrains Mono',monospace; color:var(--gallery-pnl); overflow-wrap:anywhere; }
+        .gallery-tags { display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
+        .gallery-tag { display:inline-flex; align-items:center; border:1px solid rgb(var(--line)); border-radius:5px; padding:2px 5px; color:rgb(var(--s300)); font-size:.66rem; font-weight:600; overflow-wrap:anywhere; max-width:100%; }
+        .gallery-result { color:var(--gallery-result); border-color:color-mix(in srgb,var(--gallery-result) 45%,transparent); background:color-mix(in srgb,var(--gallery-result) 12%,transparent); box-shadow:0 0 7px color-mix(in srgb,var(--gallery-result) 14%,transparent); }
+        .gallery-direction { color:var(--gallery-direction); background:color-mix(in srgb,var(--gallery-direction) 14%,transparent); border-color:transparent; }
+        .gallery-rr { background:rgb(var(--f600)); border-color:transparent; }
+        .gallery-group { display:flex; flex-direction:column; gap:6px; }
+        .gallery-group-label { color:rgb(var(--s300)); font-size:.64rem; font-weight:600; text-transform:uppercase; }
+        .gallery-body .gallery-group { border-top:1px solid rgb(var(--line)/.65); padding-top:12px; margin-top:5px; }
+        .gallery-foot { margin-top:auto; padding-top:4px; }
+        .gallery-view-trade { width:100%; display:flex; align-items:center; justify-content:space-between; color:rgb(var(--s400)); background:transparent; border:0; text-align:left; padding:5px 0 2px; font-size:.7rem; cursor:pointer; }
+        .gallery-view-trade:hover { color:rgb(var(--accent)); }
+        .gallery-empty { padding:36px 12px; text-align:center; color:rgb(var(--s400)); }
+        .gallery-empty h3 { color:rgb(var(--white)); font-size:.95rem; font-weight:700; margin-bottom:8px; }
+        .gallery-empty p { font-size:.78rem; }
+        .gallery-pagination { display:flex; justify-content:center; align-items:center; gap:12px; padding:0 0 16px; }
+        .gallery-pagination[hidden],.gallery-empty[hidden],.gallery-muted[hidden] { display:none; }
+        #gallery-dialog { width:min(1200px,94vw); max-width:94vw; max-height:90vh; padding:0; border:1px solid rgb(var(--line)); border-radius:13px; background:var(--bg-card); color:rgb(var(--s200)); margin:auto; overflow:auto; }
+        #gallery-dialog::backdrop { background:#000b; }
+        #gallery-dialog.gallery-expanded { width:98vw; max-width:98vw; max-height:95vh; }
+        .gallery-dialog-head { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:14px; border-bottom:1px solid rgb(var(--line)); }
+        .gallery-dialog-head h2 { flex:1; font-size:1rem; font-weight:800; }
+        .gallery-dialog-body { display:grid; grid-template-columns:minmax(0,2.3fr) minmax(230px,1fr); gap:14px; padding:14px; }
+        .gallery-preview-stage { background:rgb(var(--f950)); border-radius:8px; overflow:auto; min-height:250px; max-height:72vh; display:block; }
+        #gallery-original { display:block; width:100%; max-width:none; height:auto; margin:auto; }
+        #gallery-original[hidden] { display:none; }
+        .gallery-detail { min-width:0; overflow-wrap:anywhere; display:flex; flex-direction:column; gap:12px; }
+        .gallery-detail p { white-space:pre-wrap; font-size:.8rem; }
+        @media(max-width:800px) { .gallery-dialog-body { grid-template-columns:1fr; } }
     </style>
 </head>
 <body>
@@ -1631,6 +1690,7 @@
                 <div class="workspace-view-tabs no-drag" role="tablist" aria-label="Workspace views">
                     <button type="button" id="workspace-overview-tab" class="workspace-view-tab" role="tab" aria-selected="true" aria-controls="workspace-overview-panel">Overview</button>
                     <button type="button" id="workspace-log-tab" class="workspace-view-tab" role="tab" aria-selected="false" aria-controls="workspace-log-panel" tabindex="-1">Log</button>
+                    <button type="button" id="workspace-gallery-tab" class="workspace-view-tab" role="tab" aria-selected="false" aria-controls="workspace-gallery-panel" tabindex="-1"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-5 5 6"/></svg>Gallery</button>
                 </div>
                 <button type="button" id="new-trade-btn" class="new-trade-btn no-drag">
                     <span class="new-trade-plus">+</span> New trade
@@ -1816,6 +1876,30 @@
                 </div>
             </details>
             </section>
+
+            <section id="workspace-gallery-panel" role="tabpanel" aria-labelledby="workspace-gallery-tab" hidden>
+                <div class="gallery-shell">
+                    <header class="gallery-head"><div><h2>Trade Gallery</h2><p class="gallery-muted">Your visual trading history</p></div><span id="gallery-count" class="gallery-muted" aria-live="polite"></span></header>
+                    <div class="gallery-toolbar">
+                        <div class="gallery-outcomes" role="group" aria-label="Outcome">
+                            <button type="button" class="gallery-btn" data-gallery-outcome="" aria-pressed="true">All Trades</button>
+                            <button type="button" class="gallery-btn" data-gallery-outcome="WIN" aria-pressed="false">WIN</button>
+                            <button type="button" class="gallery-btn" data-gallery-outcome="LOSS" aria-pressed="false">LOSS</button>
+                            <button type="button" class="gallery-btn" data-gallery-outcome="BE" aria-pressed="false">BE</button>
+                        </div>
+                        <div class="gallery-tools">
+                            <button type="button" class="gallery-btn gallery-icon-btn" id="gallery-grid-toggle" aria-label="Larger cards" title="Larger cards" aria-pressed="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></button>
+                        </div>
+                    </div>
+                    <div id="gallery-grid" class="gallery-grid"></div>
+                    <div id="gallery-empty" class="gallery-empty" hidden><h3 id="gallery-empty-title"></h3><p id="gallery-empty-text"></p></div>
+                    <div id="gallery-pagination" class="gallery-pagination" hidden><button type="button" id="gallery-prev" class="gallery-btn">‹ Previous</button><span id="gallery-page" class="gallery-muted"></span><button type="button" id="gallery-next" class="gallery-btn">Next ›</button></div>
+                </div>
+            </section>
+            <dialog id="gallery-dialog" aria-labelledby="gallery-dialog-title">
+                <div class="gallery-dialog-head"><h2 id="gallery-dialog-title">Trade details</h2><button type="button" class="gallery-btn" id="gallery-zoom-out" aria-label="Zoom out">−</button><button type="button" class="gallery-btn" id="gallery-zoom-in" aria-label="Zoom in">+</button><button type="button" class="gallery-btn" id="gallery-fullscreen">Full Screen</button><button type="button" class="gallery-btn" id="gallery-edit">Edit Trade</button><button type="button" class="gallery-btn" id="gallery-close">Close ✕</button></div>
+                <div class="gallery-dialog-body"><div class="gallery-preview-stage"><p id="gallery-preview-status" class="gallery-empty">Loading image…</p><img id="gallery-original" alt="Original trade screenshot" hidden></div><div id="gallery-detail" class="gallery-detail"></div></div>
+            </dialog>
 
         </div>
         <!-- ─── END DASHBOARD CONTAINER ─────────────────────────── -->
@@ -2492,6 +2576,7 @@
         }
 
         function showEmptyNoteEditor() {
+            if (window._setWorkspaceView) window._setWorkspaceView('overview');
             document.getElementById('dashboard-container').classList.add('hidden');
             document.getElementById('note-editor-container').classList.add('active');
             document.getElementById('note-editor-title').textContent = '📝 Select a note';
@@ -2570,6 +2655,7 @@
             activeNoteId = id;
             localStorage.setItem(ACTIVE_NOTE_KEY, id);
 
+            if (window._setWorkspaceView) window._setWorkspaceView('overview');
             document.getElementById('dashboard-container').classList.add('hidden');
             document.getElementById('note-editor-container').classList.add('active');
             localStorage.setItem(LAST_VIEW_KEY, 'notepad');
@@ -2860,6 +2946,7 @@
         let logYear, logMonth;
         let currentAttachment = null;
         let currentAttachmentFile = null;
+        let removeExistingAttachment = false;
         let currentTimelineRange = 'month';
         let timelineChart = null;
         let editingTradeId = null;
@@ -3100,6 +3187,7 @@
         function refreshColoredViews() {
             if (typeof renderLog === 'function') renderLog();
             if (typeof renderEdge === 'function') renderEdge();
+            renderGallery();
         }
 
         /* ── Generic Notion-style multi-select ── */
@@ -3458,6 +3546,7 @@
                 alert('File size exceeds 5MB limit.');
                 return;
             }
+            removeExistingAttachment = false;
             currentAttachmentFile = file;
             const placeholder = document.getElementById('attachment-placeholder');
             const preview = document.getElementById('attachment-preview');
@@ -3471,6 +3560,7 @@
             sizeEl.textContent = formatFileSize(file.size);
             const reader = new FileReader();
             reader.onload = function(e) {
+                if (currentAttachmentFile !== file) return;
                 imgEl.src = e.target.result;
                 imgPreview.classList.remove('hidden');
             };
@@ -3490,6 +3580,7 @@
             document.getElementById('attachment-preview').classList.add('hidden');
             document.getElementById('attachment-image-preview').classList.add('hidden');
             document.getElementById('attachment-input').value = '';
+            document.getElementById('attachment-preview-img').removeAttribute('src');
         }
 
         async function getActiveWorkspaceWithFolder() {
@@ -3624,24 +3715,24 @@
                     tradeData.attachmentPath = oldTrade.attachmentPath;
                     tradeData.attachmentUrl = oldTrade.attachmentUrl;
 
+                    let obsoletePath = null;
                     if (currentAttachment && currentAttachment.data) {
-                        if (oldTrade.attachmentPath) {
-                            window.byobWorkspace.deleteAttachment({ path: oldTrade.attachmentPath })
-                                .catch(err => console.error('Failed to delete old attachment:', err));
-                        }
-                        const ws = await getActiveWorkspaceWithFolder();
-                        if (ws && ws.folderPath) {
-                            const result = await window.byobWorkspace.saveAttachment(
-                                { id: ws.id, name: ws.name, folderPath: ws.folderPath },
-                                currentAttachment.data
-                            );
+                        try {
+                            const ws = await getActiveWorkspaceWithFolder();
+                            if (!ws || !ws.folderPath) throw new Error('Workspace folder unavailable');
+                            const result = await window.byobWorkspace.saveAttachment({ id: ws.id, name: ws.name, folderPath: ws.folderPath }, currentAttachment.data);
+                            tradeData.attachment = { name: result.attachment.name, type: result.attachment.type, size: result.attachment.size };
                             tradeData.attachmentPath = result.attachment.path;
                             tradeData.attachmentUrl = result.attachment.url;
-                        }
+                            obsoletePath = oldTrade.attachmentPath;
+                        } catch (err) { console.error(err); alert('Could not save the replacement screenshot. Original kept.'); return; }
+                    } else if (removeExistingAttachment) {
+                        obsoletePath = oldTrade.attachmentPath;
+                        delete tradeData.attachment; delete tradeData.attachmentPath; delete tradeData.attachmentUrl;
                     }
-
                     trades[index] = tradeData;
-                    save();
+                    try { save(); } catch (err) { trades[index]=oldTrade; alert('Could not save changes. Original kept.'); return; }
+                    if (obsoletePath && obsoletePath !== tradeData.attachmentPath) window.byobWorkspace.deleteAttachment({path:obsoletePath}).catch(err=>console.error('Failed to delete old attachment:',err));
                     cancelEdit();
                     closeTradeDrawer();
                     updateUI();
@@ -4582,7 +4673,16 @@
             const trade = trades.find(t => t.id === id);
             if (!trade) return;
 
+            clearAttachment(); removeExistingAttachment = false;
             editingTradeId = id;
+            if (trade.attachmentPath || trade.attachmentUrl) {
+                document.getElementById('attachment-placeholder').classList.add('hidden');
+                document.getElementById('attachment-preview').classList.remove('hidden');
+                document.getElementById('attachment-name').textContent = trade.attachment?.name || 'Saved screenshot';
+                document.getElementById('attachment-size').textContent = trade.attachment?.size ? formatFileSize(trade.attachment.size) : '';
+                const url = gallerySafeUrl(trade.attachmentUrl);
+                if(url) { document.getElementById('attachment-preview-img').src=url; document.getElementById('attachment-image-preview').classList.remove('hidden'); }
+            }
 
             document.getElementById('f-datetime').value = trade.datetime;
             if (window._dtpRefresh) window._dtpRefresh();
@@ -4634,6 +4734,7 @@
 
         function cancelEdit() {
             editingTradeId = null;
+            removeExistingAttachment = false;
             document.getElementById('trade-form').reset();
             document.getElementById('f-comment').value = '';
             updateRRPreview();
@@ -4881,6 +4982,124 @@
         /* ══════════════════════════════════════════════════════
            MASTER UPDATE
            ══════════════════════════════════════════════════════ */
+        /* Trade Gallery — shared trades, bounded pages, lazy thumbnails */
+        let galleryPage = 0, galleryOutcome = '', galleryObserver = null, galleryEpoch = 0;
+        let galleryQueue = Promise.resolve(), galleryTradeId = null, galleryZoom = 1, galleryWorkspace = null;
+        let galleryReturnFocus = null;
+        const galleryPageSize = 12;
+        const galleryEl = id => document.getElementById('gallery-' + id);
+        const galleryVisible = () => !document.getElementById('workspace-gallery-panel').hidden && !document.getElementById('dashboard-container').classList.contains('hidden');
+        const galleryList = (t,k) => Array.isArray(t[k]) ? t[k].filter(v=>typeof v==='string' && v.trim()) : [];
+        const gallerySource = t => {
+            // A saved image reference is required; metadata alone does not qualify.
+            const path = typeof t.attachmentPath === 'string' ? t.attachmentPath.trim() : '';
+            const url = gallerySafeUrl(t.attachmentUrl);
+            return /\.(png|jpe?g|webp|gif|bmp)$/i.test(path) || /\.(png|jpe?g|webp|gif|bmp)$/i.test(url);
+        };
+        function gallerySafeUrl(value) {
+            try { const u = new URL(value); return u.protocol === 'file:' ? u.href : ''; } catch (_) { return ''; }
+        }
+        function galleryColor(n) { return n > 0 ? 'rgb(var(--up))' : n < 0 ? 'rgb(var(--down))' : '#a78bfa'; }
+        function galleryResultColor(t) { return effectiveOutcome(t)==='WIN' ? 'rgb(var(--up))' : effectiveOutcome(t)==='LOSS' ? 'rgb(var(--down))' : '#a78bfa'; }
+        function galleryNode(tag,cls,txt) { const el=document.createElement(tag); if(cls) el.className=cls; if(txt!==undefined) el.textContent=txt; return el; }
+        function galleryTags(t,k) {
+            const wrap=galleryNode('div','gallery-tags');
+            galleryList(t,k).forEach(v=>{ const tag=galleryNode('span','gallery-tag',v); tag.style.cssText=colorStyle(k,v); wrap.append(tag); });
+            return wrap;
+        }
+        function galleryGroup(parent,title,content) {
+            if (!content || (typeof content==='string' && !content.trim()) || (typeof content!=='string' && !content.childNodes.length)) return;
+            const group=galleryNode('div','gallery-group'); group.append(galleryNode('span','gallery-group-label',title),typeof content==='string'?galleryNode('p','',content):content); parent.append(group);
+        }
+        function galleryInfo(t,full) {
+            const body=galleryNode('div',full?'gallery-detail':'gallery-body');
+            body.style.setProperty('--gallery-result',galleryResultColor(t)); body.style.setProperty('--gallery-pnl',galleryColor(pnlSigned(t)));
+            const row=galleryNode('div','gallery-row'); const left=galleryNode('div','gallery-tags');
+            left.append(galleryNode('span','gallery-asset',galleryList(t,'assets').join(' · ') || 'Trade'),galleryNode('span','gallery-tag gallery-result',effectiveOutcome(t)||'—'));
+            row.append(left,galleryNode('span','gallery-pnl',fmtDollar(pnlSigned(t)))); body.append(row);
+            if(t.datetime) { const d=new Date(t.datetime); body.append(galleryNode('div','gallery-muted',Number.isNaN(+d)?String(t.datetime):(full ? d.toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}) : d.toLocaleDateString('en-US',{dateStyle:'medium'})))); }
+            const tags=galleryTags(t,'sessions');
+            if(t.direction) { const tag=galleryNode('span','gallery-tag gallery-direction',t.direction); tag.style.setProperty('--gallery-direction',t.direction==='LONG'?'rgb(var(--up))':'rgb(var(--down))'); tags.append(tag); }
+            const rr=fmtRR(t); if(rr) tags.append(galleryNode('span','gallery-tag gallery-rr','R:R '+rr)); if(tags.childNodes.length) body.append(tags);
+            if(full) galleryGroup(body,'Account',galleryTags(t,'accounts')); galleryGroup(body,'Confluences',galleryTags(t,'confluences')); if(full) galleryGroup(body,'Mindset',galleryTags(t,'psych'));
+            if(full) { if(t.riskAmount>0) galleryGroup(body,'Risk Amount','$'+Number(t.riskAmount).toLocaleString('en-US')); if(t.outcome!==effectiveOutcome(t)) galleryGroup(body,'Recorded Outcome',String(t.outcome)); galleryGroup(body,'Notes',t.comment||''); if(t.attachment?.name) galleryGroup(body,'Attachment',t.attachment.name); }
+            return body;
+        }
+        function galleryClear() {
+            galleryEpoch++; if(galleryObserver) galleryObserver.disconnect(); galleryObserver=null;
+            galleryEl('grid').replaceChildren();
+        }
+        function galleryLoadPhoto(img,t,status,epoch) {
+            galleryQueue=galleryQueue.catch(()=>{}).then(async()=>{
+                if(epoch!==galleryEpoch || !img.isConnected || !galleryVisible()) return;
+                let url='';
+                if(t.attachmentPath && window.byobWorkspace?.getGalleryThumbnail) {
+                    try { url=gallerySafeUrl((await window.byobWorkspace.getGalleryThumbnail({path:t.attachmentPath})).url); } catch (_) {}
+                }
+                if(epoch!==galleryEpoch || !img.isConnected || !galleryVisible()) return;
+                const original=gallerySafeUrl(t.attachmentUrl);
+                url=url||original;
+                if(!url) {status.textContent='Image unavailable'; return;}
+                img.onload=()=>{img.hidden=false;status.hidden=true;};
+                img.onerror=()=>{if(img.src!==original && original){img.src=original;return;} img.hidden=true;status.hidden=false;status.textContent='Image unavailable';};
+                img.src=url;
+            });
+        }
+        function galleryReset(render=true) {
+            galleryOutcome=''; galleryPage=0;
+            if(render) renderGallery();
+        }
+        function renderGallery() {
+            if(!galleryVisible()) return;
+            if(galleryWorkspace!==STORAGE_KEY) {galleryWorkspace=STORAGE_KEY;galleryReset(false);galleryClose();}
+            galleryClear();
+            const all=trades.filter(gallerySource);
+            document.querySelectorAll('[data-gallery-outcome]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.galleryOutcome===galleryOutcome)));
+            const filtered=all.filter(t=>!galleryOutcome||effectiveOutcome(t)===galleryOutcome);
+            filtered.sort((a,b)=>String(b.datetime||'').localeCompare(String(a.datetime||'')));
+            const pages=Math.max(1,Math.ceil(filtered.length/galleryPageSize)); galleryPage=Math.min(galleryPage,pages-1);
+            galleryEl('count').textContent=filtered.length===all.length ? `${all.length} ${all.length===1?'Trade':'Trades'}` : `${filtered.length} of ${all.length} Trades`;
+            galleryEl('empty').hidden=filtered.length>0; galleryEl('pagination').hidden=pages<=1;
+            if(!filtered.length){galleryEl('empty-title').textContent=all.length?'No matching trades':'Your gallery is empty';galleryEl('empty-text').textContent=all.length?'Choose All Trades or a different outcome.':'Upload a screenshot when logging a trade to start building your visual trading history.';return;}
+            galleryEl('page').textContent=`Page ${galleryPage+1} of ${pages}`;galleryEl('prev').disabled=galleryPage===0;galleryEl('next').disabled=galleryPage>=pages-1;
+            const epoch=galleryEpoch, jobs=new Map();
+            if('IntersectionObserver' in window) galleryObserver=new IntersectionObserver((entries,observer)=>entries.forEach(e=>{if(e.isIntersecting){observer.unobserve(e.target);const job=jobs.get(e.target);if(job){jobs.delete(e.target);job();}}}),{rootMargin:'160px'});
+            filtered.slice(galleryPage*galleryPageSize,(galleryPage+1)*galleryPageSize).forEach(t=>{
+                const card=galleryNode('article','gallery-card'); card.style.setProperty('--gallery-result',galleryResultColor(t));
+                const photo=galleryNode('button','gallery-photo');photo.type='button';photo.setAttribute('aria-label','Open trade screenshot');
+                const img=galleryNode('img'); img.alt='Trade screenshot';img.hidden=true;img.decoding='async';
+                const status=galleryNode('span','gallery-muted','Loading image…');photo.append(status,img);photo.onclick=()=>galleryOpen(t.id);
+                const body=galleryInfo(t,false),foot=galleryNode('div','gallery-row gallery-foot'),btn=galleryNode('button','gallery-view-trade');btn.append(galleryNode('span','','View Trade'),galleryNode('span','','↗'));btn.type='button';btn.onclick=()=>galleryOpen(t.id);foot.append(btn);body.append(foot);card.append(photo,body);galleryEl('grid').append(card);
+                const job=()=>galleryLoadPhoto(img,t,status,epoch); if(galleryObserver){jobs.set(photo,job);galleryObserver.observe(photo);}else job();
+            });
+        }
+        function galleryClose() { const dlg=galleryEl('dialog'); if(dlg.open) dlg.close(); galleryEl('original').removeAttribute('src');galleryEl('original').hidden=true;galleryEl('detail').replaceChildren();galleryTradeId=null; }
+        function galleryOpen(id) {
+            const t=trades.find(t=>t.id===id); if(!t) return;
+            galleryTradeId=id;galleryZoom=1;galleryReturnFocus=document.activeElement;
+            const dlg=galleryEl('dialog'),img=galleryEl('original'),status=galleryEl('preview-status');
+            dlg.classList.remove('gallery-expanded');galleryEl('fullscreen').textContent='Full Screen';img.style.width='100%';img.hidden=true;status.hidden=false;status.textContent='Loading image…';
+            galleryEl('detail').replaceChildren(galleryInfo(t,true));
+            img.onload=()=>{if(galleryTradeId===id){img.hidden=false;status.hidden=true;}};
+            img.onerror=()=>{if(galleryTradeId===id){img.hidden=true;status.hidden=false;status.textContent='Image unavailable';}};
+            if(!dlg.open) dlg.showModal();
+            const url=gallerySafeUrl(t.attachmentUrl); if(url)img.src=url;else status.textContent='Image unavailable';
+        }
+        function galleryBind() {
+            document.querySelectorAll('[data-gallery-outcome]').forEach(btn=>btn.addEventListener('click',()=>{galleryOutcome=btn.dataset.galleryOutcome;galleryPage=0;renderGallery();}));
+            const gridToggle=galleryEl('grid-toggle');
+            gridToggle.onclick=()=>{const large=galleryEl('grid').classList.toggle('gallery-large');gridToggle.setAttribute('aria-pressed',String(large));gridToggle.title=large?'Compact cards':'Larger cards';gridToggle.setAttribute('aria-label',gridToggle.title);};
+            galleryEl('prev').onclick=()=>{galleryPage--;renderGallery();};galleryEl('next').onclick=()=>{galleryPage++;renderGallery();};
+            galleryEl('close').onclick=galleryClose;galleryEl('dialog').addEventListener('cancel',e=>{e.preventDefault();galleryClose();});
+            galleryEl('dialog').addEventListener('close',()=>{if(galleryReturnFocus?.isConnected) galleryReturnFocus.focus();galleryReturnFocus=null;});
+            galleryEl('dialog').addEventListener('click',e=>{if(e.target===galleryEl('dialog'))galleryClose();});
+            const zoom=delta=>{galleryZoom=Math.max(1,Math.min(4,galleryZoom+delta));galleryEl('original').style.width=(galleryZoom*100)+'%';};
+            galleryEl('zoom-in').onclick=()=>zoom(.25);galleryEl('zoom-out').onclick=()=>zoom(-.25);
+            galleryEl('fullscreen').onclick=()=>{const expanded=galleryEl('dialog').classList.toggle('gallery-expanded');galleryEl('fullscreen').textContent=expanded?'Exit Full Screen':'Full Screen';};
+            galleryEl('edit').onclick=()=>{const id=galleryTradeId;galleryClose();if(id) editTrade(id);};
+        }
+        galleryBind();
+
         function updateUI() {
             renderTopStats();
             renderCalendar();
@@ -4888,41 +5107,41 @@
             renderEdge();
             renderLog();
             renderTimeline();
+            renderGallery();
             if (window._wsRenderSidebar) window._wsRenderSidebar();
         }
 
         /* Workspace views: keep the same DOM, trade data and event bindings. */
         function setWorkspaceView(view) {
-            const isLog = view === 'log';
-            const overviewPanel = document.getElementById('workspace-overview-panel');
-            const logPanel = document.getElementById('workspace-log-panel');
-            const overviewTab = document.getElementById('workspace-overview-tab');
-            const logTab = document.getElementById('workspace-log-tab');
-            overviewPanel.hidden = isLog;
-            logPanel.hidden = !isLog;
-            overviewTab.setAttribute('aria-selected', String(!isLog));
-            logTab.setAttribute('aria-selected', String(isLog));
-            overviewTab.tabIndex = isLog ? -1 : 0;
-            logTab.tabIndex = isLog ? 0 : -1;
-            if (isLog) {
+            const views = ['overview','log','gallery'];
+            if (!views.includes(view)) return;
+            views.forEach(name => {
+                const active = name === view;
+                document.getElementById('workspace-' + name + '-panel').hidden = !active;
+                const tab = document.getElementById('workspace-' + name + '-tab');
+                tab.setAttribute('aria-selected', String(active)); tab.tabIndex = active ? 0 : -1;
+            });
+            if (view !== 'gallery') { galleryClear(); galleryClose(); }
+            if (view === 'log') {
                 document.getElementById('log-section').open = true;
                 renderLog();
-            } else {
+            } else if (view === 'gallery') renderGallery();
+            else {
                 requestAnimationFrame(() => {
-                    if (!overviewPanel.hidden && !document.getElementById('dashboard-container').classList.contains('hidden') && timelineChart) {
+                    if (!document.getElementById('workspace-overview-panel').hidden && !document.getElementById('dashboard-container').classList.contains('hidden') && timelineChart) {
                         timelineChart.resize();
                     }
                 });
             }
         }
         window._setWorkspaceView = setWorkspaceView;
-        ['overview', 'log'].forEach(view => {
+        ['overview', 'log', 'gallery'].forEach((view, i, views) => {
             const tab = document.getElementById('workspace-' + view + '-tab');
             tab.addEventListener('click', () => setWorkspaceView(view));
             tab.addEventListener('keydown', event => {
                 if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
                 event.preventDefault();
-                const next = event.key === 'Home' ? 'overview' : event.key === 'End' ? 'log' : view === 'overview' ? 'log' : 'overview';
+                const next = event.key === 'Home' ? views[0] : event.key === 'End' ? views[views.length-1] : views[(i+(event.key==='ArrowRight'?1:-1)+views.length)%views.length];
                 setWorkspaceView(next);
                 document.getElementById('workspace-' + next + '-tab').focus();
             });
@@ -4999,7 +5218,7 @@
             });
             const removeBtn = document.getElementById('attachment-remove');
             if (removeBtn) {
-                removeBtn.addEventListener('click', clearAttachment);
+                removeBtn.addEventListener('click', e => { e.stopPropagation(); if(editingTradeId) removeExistingAttachment=true; clearAttachment(); });
             }
         }
 
